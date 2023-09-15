@@ -38,10 +38,14 @@ function Landing() {
                   <span
                     data-bs-toggle="modal"
                     data-bs-target="#staticBackdropLive"
-                    style={{textDecoration: 'underline', color: 'blue', cursor: 'pointer'}}
+                    style={{
+                      textDecoration: "underline",
+                      color: "blue",
+                      cursor: "pointer",
+                    }}
                   >
-                    here 
-                  </span> 
+                    here
+                  </span>
                   &nbsp;to register.
                 </div>
                 <button
@@ -68,7 +72,7 @@ function Landing() {
                   <div class="modal-content">
                     <div class="modal-header">
                       <h1 class="modal-title fs-5" id="staticBackdropLiveLabel">
-                        Register
+                        Register: credentials repoitory
                       </h1>
                       <button
                         type="button"
@@ -78,77 +82,73 @@ function Landing() {
                       ></button>
                     </div>
                     <div class="modal-body">
-                    <div>
-        <div class="bd-example-snippet bd-code-snippet"><div class="bd-example">
-        <form class="row g-3">
-          <div class="col-md-4">
-            <label for="validationServer01" class="form-label">First name</label>
-            <input type="text" class="form-control is-valid" id="validationServer01" value="Mark" required="" />
-            <div class="valid-feedback">
-              Looks good!
-            </div>
-          </div>
-          <div class="col-md-4">
-            <label for="validationServer02" class="form-label">Last name</label>
-            <input type="text" class="form-control is-valid" id="validationServer02" value="Otto" required="" />
-            <div class="valid-feedback">
-              Looks good!
-            </div>
-          </div>
-          <div class="col-md-4">
-            <label for="validationServerUsername" class="form-label">Username</label>
-            <div class="input-group has-validation">
-              <span class="input-group-text" id="inputGroupPrepend3">@</span>
-              <input type="text" class="form-control is-invalid" id="validationServerUsername" aria-describedby="inputGroupPrepend3" required="" />
-              <div class="invalid-feedback">
-                Please choose a username.
-              </div>
-            </div>
-          </div>
-          <div class="col-md-6">
-            <label for="validationServer03" class="form-label">City</label>
-            <input type="text" class="form-control is-invalid" id="validationServer03" required="" />
-            <div class="invalid-feedback">
-              Please provide a valid city.
-            </div>
-          </div>
-          <div class="col-md-3">
-            <label for="validationServer04" class="form-label">State</label>
-            <select class="form-select is-invalid" id="validationServer04" required="">
-              <option selected="" disabled="" value="">Choose...</option>
-              <option>...</option>
-            </select>
-            <div class="invalid-feedback">
-              Please select a valid state.
-            </div>
-          </div>
-          <div class="col-md-3">
-            <label for="validationServer05" class="form-label">Zip</label>
-            <input type="text" class="form-control is-invalid" id="validationServer05" required="" />
-            <div class="invalid-feedback">
-              Please provide a valid zip.
-            </div>
-          </div>
-          <div class="col-12">
-            <div class="form-check">
-              <input class="form-check-input is-invalid" type="checkbox" value="" id="invalidCheck3" required="" />
-              <label class="form-check-label" for="invalidCheck3">
-                Agree to terms and conditions
-              </label>
-              <div class="invalid-feedback">
-                You must agree before submitting.
-              </div>
-            </div>
-          </div>
-          <div class="col-12">
-            <button class="btn btn-primary" type="submit">Submit form</button>
-          </div>
-        </form>
-        </div></div>
-
-      </div>
+                      <div>
+                        <div class="bd-example-snippet bd-code-snippet">
+                          <div class="bd-example">
+                            <form class="row g-3">
+                              <div class="col-md-6">
+                                <label for="firstName" class="form-label">
+                                  First name
+                                </label>
+                                <input
+                                  type="text"
+                                  class="form-control"
+                                  id="firstName"
+                                  required=""
+                                />
+                              </div>
+                              <div class="col-md-6">
+                                <label for="lastName" class="form-label">
+                                  Last name
+                                </label>
+                                <input
+                                  type="text"
+                                  class="form-control"
+                                  id="lastName"
+                                  required=""
+                                />
+                              </div>
+                              <div class="col-md-6">
+                                <label for="userName" class="form-label">
+                                  Username
+                                </label>
+                                <input
+                                  type="text"
+                                  class="form-control"
+                                  id="userName"
+                                  required=""
+                                />
+                              </div>
+                              <div class="col-md-6">
+                                <label for="password" class="form-label">
+                                  Password
+                                </label>
+                                <input
+                                  type="text"
+                                  class="form-control"
+                                  id="password"
+                                  required=""
+                                />
+                              </div>
+                              <div class="col-12">
+                                <div id="emailHelp" className="form-text mb-3">
+                                  You will be redirected to the Sign-In page
+                                  after registering.
+                                </div>
+                              </div>
+                            </form>
+                          </div>
+                        </div>
+                      </div>
                     </div>
                     <div class="modal-footer">
+                      <button
+                        class="btn btn-primary"
+                        type="submit"
+                        data-bs-dismiss="modal"
+                      >
+                        Register
+                      </button>
                       <button
                         type="button"
                         class="btn btn-secondary"
