@@ -1,5 +1,25 @@
 function Landing() {
-  function handleSubmit(e) {}
+  function handleSignIn(e) {}
+
+  function handleRegister(e) {
+    // ADD a new user
+    e.preventDefault();
+    const user = {
+      firstname: document.getElementById("firstnameReg").value,
+      lastname: document.getElementById("lastnameReg").value,
+      username: document.getElementById("usernameReg").value,
+      password: document.getElementById("passwordReg").value,
+    };
+    console.log(user)
+    fetch("/user-add-new", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(user),
+    }).then(() => {
+      console.log("Frontend - new user added");
+      // window.location.href = "/";
+    });
+  }
 
   return (
     <>
@@ -13,7 +33,7 @@ function Landing() {
               <h4 className="text-body-emphasis">Sign In</h4>
               <form>
                 <div className="mb-3">
-                  <label for="username" className="form-label">
+                  <label htmlFor="username" className="form-label">
                     Username
                   </label>
                   <input
@@ -24,7 +44,7 @@ function Landing() {
                   />
                 </div>
                 <div className="mb-3">
-                  <label for="password" className="form-label">
+                  <label htmlFor="password" className="form-label">
                     Password
                   </label>
                   <input
@@ -53,84 +73,84 @@ function Landing() {
                   className="btn btn-primary"
                   data-bs-toggle="modal"
                   data-bs-target="#exampleModalFullscreen"
-                  onClick={(e) => handleSubmit(e)}
+                  onClick={(e) => handleSignIn(e)}
                 >
                   Submit
                 </button>
               </form>
               {/* Register Modal  */}
               <div
-                class="modal fade"
+                className="modal fade"
                 id="staticBackdropLive"
                 data-bs-backdrop="static"
                 data-bs-keyboard="false"
-                tabindex="-1"
+                tabndex="-1"
                 aria-labelledby="staticBackdropLiveLabel"
                 aria-hidden="true"
               >
-                <div class="modal-dialog">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h1 class="modal-title fs-5" id="staticBackdropLiveLabel">
+                <div className="modal-dialog">
+                  <div className="modal-content">
+                    <div className="modal-header">
+                      <h1 className="modal-title fs-5" id="staticBackdropLiveLabel">
                         Register: credentials repoitory
                       </h1>
                       <button
                         type="button"
-                        class="btn-close"
+                        className="btn-close"
                         data-bs-dismiss="modal"
                         aria-label="Close"
                       ></button>
                     </div>
-                    <div class="modal-body">
+                    <div className="modal-body">
                       <div>
-                        <div class="bd-example-snippet bd-code-snippet">
-                          <div class="bd-example">
-                            <form class="row g-3">
-                              <div class="col-md-6">
-                                <label for="firstName" class="form-label">
+                        <div className="bd-example-snippet bd-code-snippet">
+                          <div className="bd-example">
+                            <form className="row g-3">
+                              <div className="col-md-6">
+                                <label htmlFor="firstName" className="form-label">
                                   First name
                                 </label>
                                 <input
                                   type="text"
-                                  class="form-control"
-                                  id="firstName"
+                                  className="form-control"
+                                  id="firstnameReg"
                                   required=""
                                 />
                               </div>
-                              <div class="col-md-6">
-                                <label for="lastName" class="form-label">
+                              <div className="col-md-6">
+                                <label htmlFor="lastName" className="form-label">
                                   Last name
                                 </label>
                                 <input
                                   type="text"
-                                  class="form-control"
-                                  id="lastName"
+                                  className="form-control"
+                                  id="lastnameReg"
                                   required=""
                                 />
                               </div>
-                              <div class="col-md-6">
-                                <label for="userName" class="form-label">
+                              <div className="col-md-6">
+                                <label htmlFor="username" className="form-label">
                                   Username
                                 </label>
                                 <input
                                   type="text"
-                                  class="form-control"
-                                  id="userName"
+                                  className="form-control"
+                                  id="usernameReg"
                                   required=""
                                 />
                               </div>
-                              <div class="col-md-6">
-                                <label for="password" class="form-label">
+                              <div className="col-md-6">
+                                <label htmlFor="password" className="form-label">
                                   Password
                                 </label>
                                 <input
-                                  type="text"
-                                  class="form-control"
-                                  id="password"
+                                  type="password"
+                                  className="form-control"
+                                  id="passwordReg"
                                   required=""
                                 />
                               </div>
-                              <div class="col-12">
+                              <div className="col-12">
                                 <div id="emailHelp" className="form-text mb-3">
                                   You will be redirected to the Sign-In page
                                   after registering.
@@ -141,17 +161,18 @@ function Landing() {
                         </div>
                       </div>
                     </div>
-                    <div class="modal-footer">
+                    <div className="modal-footer">
                       <button
-                        class="btn btn-primary"
-                        type="submit"
+                        className="btn btn-primary"
+                        type="button"
                         data-bs-dismiss="modal"
+                        onClick={(e) => handleRegister(e)}
                       >
                         Register
                       </button>
                       <button
                         type="button"
-                        class="btn btn-secondary"
+                        className="btn btn-secondary"
                         data-bs-dismiss="modal"
                       >
                         Close

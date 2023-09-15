@@ -1,0 +1,24 @@
+const OrganisationalUnit = require("../models/organisational_unit.model");
+
+// Add a new organisational_unit
+exports.addNewOrgUnit = async (req, res) => {
+  // Create and save a new organisational_unit
+  let orgUnitModel = new OrganisationalUnit({
+    id: req.body.id,
+    name: req.body.name,
+  });
+
+  orgUnitModel
+    .save()
+    .then(function (doc) {
+      console.log(doc._id.toString());
+      res.send("The organisational_unit has been added");
+    })
+    .catch(function (error) {
+      console.log(error);
+      res
+        .status(500)
+        .send({ message: "Some error occurred while creating the organisational_unit." });
+    });
+  // https://codeforgeek.com/insert-a-document-into-mongodb-using-mongoose/
+};

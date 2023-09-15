@@ -1,3 +1,5 @@
+const mongoose = require("mongoose");
+
 // Create schema
 const OrgUnitsShema = mongoose.Schema({
   id: {
@@ -9,7 +11,7 @@ const OrgUnitsShema = mongoose.Schema({
     required: true,
   },
   departments: {
-    type: String,
+    type: Array,
     required: true,
     default: [
       {
@@ -29,5 +31,5 @@ const OrgUnitsShema = mongoose.Schema({
 });
 
 // Create Model
-const UserModel = mongoose.model("User", UserSchema);
-module.exports = UserModel;
+const OrgUnitsModel = mongoose.model("organisational_units", OrgUnitsShema);
+module.exports = OrgUnitsModel;
