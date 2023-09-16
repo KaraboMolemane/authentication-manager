@@ -1,6 +1,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
-const jwt = require("jsonwebtoken");
+
 const fs = require("fs");
 const helmet = require("helmet");
 const mongoose = require('mongoose');
@@ -41,28 +41,12 @@ mongoose.connect(process.env.MONGODB_URI, {
     console.log("Successfully connected to the database");
   });
 
-  // CRUD endpoints - Users 
+//endpoints - Users 
 app.post("/user-add-new", userController.addNewUser);
+app.post("/login", userController.userLogin)
 
-  // CRUD endpoints - OrgUnits
+// endpoints- OrgUnits
 app.post("/org-add-new", orgUnitsController.addNewOrgUnit);
 
 
-// Login endpoint 
-app.post("/login", async (req, res) => {
 
-  let result = await userController.findOneUser(req);
-  if(result){
-    let payload = {
-      name: result.username,
-      role: result.role,
-    };
-    const token = jwt.sign(JSON.stringify(payload), "jwt-secret", {
-      algorithm: "HS256",
-    });
-    res.send({ token: token, message: "Login successful!" });
-  }
-  else{
-    res.status(403).send({ message: "Incorrect login!" });
-  }
-});

@@ -1,4 +1,5 @@
 const User = require("../models/user.model");
+const jwt = require("jsonwebtoken");
 
 // Add a new user
 exports.addNewUser = async (req, res) => {
@@ -47,8 +48,26 @@ const findUserByUsername = async (req) => {
   }
 }
 
+// Login 
+exports.userLogin = async (req, res) => {
+  let result = await findOneUser(req);
+  if(result){
+    let payload = {
+      name: result.username,
+      role: result.role,
+    };
+    const token = jwt.sign(JSON.stringify(payload), "jwt-secret", {
+      algorithm: "HS256",
+    });
+    res.send({ token: token, message: "Login successful!" });
+  }
+  else{
+    res.status(403).send({ message: "Incorrect login!" });
+  }
+}
+
 // findOne user
-exports.findOneUser = async (req, res) => {
+const findOneUser = async (req) => {
   const usr = req.body.username;
   const pwd = req.body.password;
   try {
