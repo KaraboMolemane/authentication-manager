@@ -48,3 +48,21 @@ app.post("/user-add-new", userController.addNewUser);
 app.post("/org-add-new", orgUnitsController.addNewOrgUnit);
 
 
+// Login endpoint 
+app.post("/login", async (req, res) => {
+
+  let result = await userController.findOneUser(req);
+  if(result){
+    let payload = {
+      name: result.username,
+      role: result.role,
+    };
+    const token = jwt.sign(JSON.stringify(payload), "jwt-secret", {
+      algorithm: "HS256",
+    });
+    res.send({ token: token, message: "Login successful!" });
+  }
+  else{
+    res.status(403).send({ message: "Incorrect login!" });
+  }
+});

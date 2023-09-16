@@ -1,5 +1,30 @@
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+
+
 function Landing() {
-  function handleSignIn(e) {}
+  
+  function handleSignIn(e) {
+    e.preventDefault();
+    const credentials = {
+      username: document.getElementById("username").value,
+      password: document.getElementById("password").value,
+    };
+
+    fetch("/login", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(credentials),
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        toast(res.message);         
+        if(res.token){
+          // redirect for successful login
+          toast('we are IN')
+        }        
+      });
+  }
 
   function handleRegister(e) {
     // ADD a new user
@@ -10,19 +35,30 @@ function Landing() {
       username: document.getElementById("usernameReg").value,
       password: document.getElementById("passwordReg").value,
     };
-    console.log(user)
+
+    clearModalOnClose();
+
     fetch("/user-add-new", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(user),
-    }).then(() => {
-      console.log("Frontend - new user added");
-      // window.location.href = "/";
+    })      
+    .then((res) => res.json())
+    .then((res) => {
+      toast(res.message);      
     });
+  }
+
+  function clearModalOnClose() {
+    document.getElementById("firstnameReg").value = "";
+    document.getElementById("lastnameReg").value = "";
+    document.getElementById("usernameReg").value = "";
+    document.getElementById("passwordReg").value = "";
   }
 
   return (
     <>
+
       <div className="row">
         <div className="col-3"></div>
         <div className="col-6">
@@ -71,8 +107,6 @@ function Landing() {
                 <button
                   type="submit"
                   className="btn btn-primary"
-                  data-bs-toggle="modal"
-                  data-bs-target="#exampleModalFullscreen"
                   onClick={(e) => handleSignIn(e)}
                 >
                   Submit
@@ -91,7 +125,10 @@ function Landing() {
                 <div className="modal-dialog">
                   <div className="modal-content">
                     <div className="modal-header">
-                      <h1 className="modal-title fs-5" id="staticBackdropLiveLabel">
+                      <h1
+                        className="modal-title fs-5"
+                        id="staticBackdropLiveLabel"
+                      >
                         Register: credentials repoitory
                       </h1>
                       <button
@@ -107,7 +144,10 @@ function Landing() {
                           <div className="bd-example">
                             <form className="row g-3">
                               <div className="col-md-6">
-                                <label htmlFor="firstName" className="form-label">
+                                <label
+                                  htmlFor="firstName"
+                                  className="form-label"
+                                >
                                   First name
                                 </label>
                                 <input
@@ -118,7 +158,10 @@ function Landing() {
                                 />
                               </div>
                               <div className="col-md-6">
-                                <label htmlFor="lastName" className="form-label">
+                                <label
+                                  htmlFor="lastName"
+                                  className="form-label"
+                                >
                                   Last name
                                 </label>
                                 <input
@@ -129,7 +172,10 @@ function Landing() {
                                 />
                               </div>
                               <div className="col-md-6">
-                                <label htmlFor="username" className="form-label">
+                                <label
+                                  htmlFor="username"
+                                  className="form-label"
+                                >
                                   Username
                                 </label>
                                 <input
@@ -140,7 +186,10 @@ function Landing() {
                                 />
                               </div>
                               <div className="col-md-6">
-                                <label htmlFor="password" className="form-label">
+                                <label
+                                  htmlFor="password"
+                                  className="form-label"
+                                >
                                   Password
                                 </label>
                                 <input
@@ -174,6 +223,7 @@ function Landing() {
                         type="button"
                         className="btn btn-secondary"
                         data-bs-dismiss="modal"
+                        onClick={(e) => clearModalOnClose(e)}
                       >
                         Close
                       </button>
@@ -184,6 +234,10 @@ function Landing() {
             </div>
           </div>
         </div>
+      </div>
+      <div>
+        {/* toaster */}
+        <ToastContainer />
       </div>
     </>
   );
