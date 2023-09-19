@@ -7,6 +7,7 @@ import { SelectBox } from "devextreme-react/select-box";
 
 function DepartmentSelectBox(props) {
 
+  console.log("PROPS BOX", props)
     //declare state(s)
     const [error, setError] = useState(null);
     const [isLoaded, setIsLoaded] = useState(false);
@@ -32,9 +33,24 @@ function DepartmentSelectBox(props) {
   ];
 
   useEffect(() => {
-    //Do the API call
-    fetch("/get-depts-by-org-unit-id")
+
+    const orgID = {id: props.ouId}
+    console.log('orgID', orgID);
+    fetch("/get-depts-by-org-unit-id", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(orgID),
+    })
       .then((res) => res.json())
+      .then((res) => {
+        console.log("res", res);
+        // setToken(res);
+      });
+
+
+    fetch("/get-depts-by-org-unit-id")
+      //.then((res) => res.json())
+      .then((res) => console.log('res', res))
       .then(
         (result) => {
           setIsLoaded(true);

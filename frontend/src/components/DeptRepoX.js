@@ -1,18 +1,19 @@
 import React from 'react';
 import { Form, Item, Label } from 'devextreme-react/form';
-
-import DepartmentSelectBox from './DepartmentSelectBox.js';
-import OrderHistory from './OrderHistory.js';
+import "devextreme/dist/css/dx.light.css";
+// import DepartmentSelectBox from "./DepartmentSelectBox";
+import DepartmentSelectBox from './DepartmentSelectBoxX';
+import ReposTableView from "./ReposTableView";
 
 class DeptRepo extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      chosenProductId: null,
+      chosenDepartmentId: null,
     };
-    this.productChanged = this.productChanged.bind(this);
+    this.departmentChanged = this.departmentChanged.bind(this);
     this.renderSelectBox = this.renderSelectBox.bind(this);
-    this.renderOrderHistory = this.renderOrderHistory.bind(this);
+    this.renderReposTableView = this.renderReposTableView.bind(this);
   }
 
   render() {
@@ -24,7 +25,7 @@ class DeptRepo extends React.Component {
         <Item render={this.renderSelectBox}>
           {/* <Label text="Department" /> */}
         </Item>
-        <Item render={this.renderOrderHistory}>
+        <Item render={this.renderReposTableView}>
           <Label text="Repos" />
         </Item>
       </Form>
@@ -33,18 +34,18 @@ class DeptRepo extends React.Component {
 
   renderSelectBox() {
     return <DepartmentSelectBox
-      supplierId={this.props.supplierId}
-      productId={this.state.chosenProductId}
-      onProductChanged={this.productChanged} />;
+      ouId={this.props.data.data.id}
+      departmentId={this.state.chosenDepartmentId}
+      onDepartmentChanged={this.departmentChanged} />;
   }
 
-  renderOrderHistory() {
-    return <OrderHistory productId={this.state.chosenProductId} />;
+  renderReposTableView() {
+    return <ReposTableView departmentId={this.state.chosenDepartmentId} />;
   }
 
-  productChanged(productId) {
+  departmentChanged(departmentId) {
     this.setState({
-      chosenProductId: productId,
+      chosenDepartmentId: departmentId,
     });
   }
 }
