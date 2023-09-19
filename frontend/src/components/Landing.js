@@ -21,7 +21,7 @@ function Landing() {
         toast(res.message);         
         if(res.token){
           // redirect for successful login
-          toast('we are IN')
+          window.location.href = "/repos";
         }        
       });
   }

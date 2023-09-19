@@ -22,3 +22,17 @@ exports.addNewOrgUnit = async (req, res) => {
     });
   // https://codeforgeek.com/insert-a-document-into-mongodb-using-mongoose/
 };
+
+
+// Get departments belonging to an OU using the OU Id
+exports.getDepartmentsByOrgUnitId = async (req, res) => {
+  try {
+    const orgUnitId = req.body.id;
+    const orgUnit = await OrganisationalUnit.find({ id: orgUnitId });
+    const departments = orgUnit[0].departments;
+    res.send(departments);
+  } catch (error) {
+    throw error;
+  }
+  // https://www.mongodb.com/docs/manual/reference/operator/query/ne/
+};

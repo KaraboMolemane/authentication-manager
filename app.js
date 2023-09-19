@@ -47,6 +47,7 @@ app.post("/login", userController.userLogin)
 
 // endpoints- OrgUnits
 app.post("/org-add-new", orgUnitsController.addNewOrgUnit);
+app.get("/get-depts-by-org-unit-id", orgUnitsController.getDepartmentsByOrgUnitId);
 
 
 
