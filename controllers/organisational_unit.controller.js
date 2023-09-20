@@ -23,6 +23,16 @@ exports.addNewOrgUnit = async (req, res) => {
   // https://codeforgeek.com/insert-a-document-into-mongodb-using-mongoose/
 };
 
+// Get all Organisational Units
+exports.getAllOrgUnits = async (req, res) => {
+  try {
+    const orgUnits = await OrganisationalUnit.find({});
+    res.send(orgUnits);
+  } catch (error) {
+    throw error;
+  }  
+};
+
 
 // Get departments belonging to an OU using the OU Id
 exports.getDepartmentsByOrgUnitId = async (req, res) => {

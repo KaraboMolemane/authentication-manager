@@ -24,6 +24,7 @@ class DepartmentSelectBox extends React.Component {
         this.setState({
           xData: res
         });
+        
       });
 
     // this.departmentsData = createStore({
@@ -32,7 +33,7 @@ class DepartmentSelectBox extends React.Component {
     //   loadUrl: `${url}/GetProductsBySupplier`,
     //   onLoaded: this.setDefaultValue.bind(this),
     // });
-
+    this.setDefaultValue.bind(this);
     this.valueChanged = this.valueChanged.bind(this);
   }
 
@@ -42,6 +43,7 @@ class DepartmentSelectBox extends React.Component {
         value={this.props.departmentId}
         deferRendering={false}
         inputAttr={departmentLabel}
+        label="Department"
         dataSource={this.state.xData}
         valueExpr="id"
         displayExpr="name"
@@ -51,6 +53,7 @@ class DepartmentSelectBox extends React.Component {
   }
 
   setDefaultValue(items) {
+    console.log('setDefaultValue', items)
     const firstItem = items[0];
     if (firstItem && this.props.departmentId === null) {
       this.props.onDepartmentChanged(firstItem.id);
