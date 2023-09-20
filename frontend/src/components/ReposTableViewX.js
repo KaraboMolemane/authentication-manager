@@ -1,59 +1,79 @@
-import React from 'react';
+import React from "react";
 
 import {
-  Column, DataGrid, Paging, Summary, TotalItem, ValueFormat,
-} from 'devextreme-react/data-grid';
-import { createStore } from 'devextreme-aspnet-data-nojquery';
+  Column,
+  DataGrid,
+  Paging,
+  Editing,
+  Popup,
+  Form,
+  HeaderFilter,
+  Search,
+} from "devextreme-react/data-grid";
+import { Item } from "devextreme-react/form";
+import { createStore } from "devextreme-aspnet-data-nojquery";
 
-const url = 'https://js.devexpress.com/Demos/Mvc/api/DataGridAdvancedMasterDetailView';
+// const url =
+//   "https://js.devexpress.com/Demos/Mvc/api/DataGridAdvancedMasterDetailView";
 
-class OrderHistory extends React.Component {
+class ReposTableView extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
-      orderHistoryStore: null,
+      departmentRepoStore: null,
     };
+    console.log("TabLe view X", props);
   }
 
   render() {
     return (
       <DataGrid
         dataSource={this.state.orderHistoryStore}
+        keyExpr="name"
         showBorders={true}
+        //onSaving={onSaving}
       >
-        <Paging defaultPageSize={5} />
-
-        <Column dataField="OrderID" />
-        <Column dataField="OrderDate" dataType="date" />
-        <Column dataField="ShipCountry" />
-        <Column dataField="ShipCity" />
-        <Column dataField="UnitPrice" format="currency" />
-        <Column dataField="Quantity" />
-        <Column dataField="Discount" format="percent" />
-
-        <Summary>
-          <TotalItem column="UnitPrice" summaryType="sum">
-            <ValueFormat format="currency" precision={2} />
-          </TotalItem>
-          <TotalItem column="Quantity" summaryType="count" />
-        </Summary>
-
+        <Paging defaultPageSize={10} />
+        <HeaderFilter visible={true}>
+          <Search enabled={true} />
+        </HeaderFilter>
+        <Editing
+          mode="popup"
+          allowUpdating={true}
+          allowAdding={true}
+          allowDeleting={false}
+        >
+          <Popup title="Repo" showTitle={true} width={700} height={255} />
+          <Form>
+            <Item itemType="group" colCount={2} colSpan={2}>
+              <Item dataField="name" />
+              <Item dataField="url" />
+              <Item dataField="username" />
+              <Item dataField="password" />
+            </Item>
+          </Form>
+        </Editing>
+        <Column dataField="_id" caption="Id" width={70} />
+        <Column dataField="name" width={170} />
+        <Column dataField="url" />
+        <Column dataField="username" />
+        <Column dataField="password" />
       </DataGrid>
     );
   }
 
   componentDidUpdate(prevProps) {
-    const { productId } = this.props;
-    if (prevProps.productId !== productId) {
-      this.setState({
-        orderHistoryStore: createStore({
-          key: 'OrderID',
-          loadParams: { ProductID: productId },
-          loadUrl: `${url}/GetOrdersByProduct`,
-        }),
-      });
+    const { departmentId } = this.props;
+    if (prevProps.departmentId !== departmentId) {
+      // this.setState({
+      //   departmentRepoStore: createStore({
+      //     key: "OrderID",
+      //     loadParams: { ProductID: departmentId },
+      //     loadUrl: `${url}/GetOrdersByProduct`,
+      //   }),
+      // });
     }
   }
 }
 
-export default OrderHistory;
+export default ReposTableView;

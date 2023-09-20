@@ -46,3 +46,25 @@ exports.getDepartmentsByOrgUnitId = async (req, res) => {
   }
   // https://www.mongodb.com/docs/manual/reference/operator/query/ne/
 };
+
+// Get repos for a specific department belonging to an OU using the OU Id and department ID
+exports.getOUDeptReposByIds = async (req, res) => {
+  try {
+    const orgUnitId = req.body.ouId;
+    const deptId = req.body.deptId;
+
+    console.log('orgUnitId', orgUnitId);
+    console.log('deptId', deptId);
+
+    const orgUnit = await OrganisationalUnit.find({
+      id: orgUnitId,
+      departments: [{id: deptId}]
+    });
+    // const departments = orgUnit[0].departments;
+    res.send(orgUnit);
+  } catch (error) {
+    throw error;
+  }
+  // https://www.mongodb.com/docs/manual/tutorial/query-embedded-documents/
+  // https://www.mongodb.com/docs/manual/tutorial/query-array-of-documents/#std-label-array-match-embedded-documents
+};

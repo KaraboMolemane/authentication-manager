@@ -11,7 +11,6 @@ class DepartmentSelectBox extends React.Component {
     this.state = {xData: null};
 
     const orgID = {id: props.ouId}
-    console.log('orgID', orgID);
     fetch("/get-depts-by-org-unit-id", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -33,7 +32,7 @@ class DepartmentSelectBox extends React.Component {
     //   loadUrl: `${url}/GetProductsBySupplier`,
     //   onLoaded: this.setDefaultValue.bind(this),
     // });
-    this.setDefaultValue.bind(this);
+    this.setDefaultValue = this.setDefaultValue.bind(this);
     this.valueChanged = this.valueChanged.bind(this);
   }
 
@@ -48,6 +47,7 @@ class DepartmentSelectBox extends React.Component {
         valueExpr="id"
         displayExpr="name"
         onValueChanged={this.valueChanged}
+        onContentReady={this.setDefaultValue}
       />
     );
   }

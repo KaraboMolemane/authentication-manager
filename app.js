@@ -50,6 +50,7 @@ app.post("/login", userController.userLogin)
 app.post("/org-add-new", orgUnitsController.addNewOrgUnit);
 app.get("/get-all-org-units", orgUnitsController.getAllOrgUnits);
 app.post("/get-depts-by-org-unit-id", orgUnitsController.getDepartmentsByOrgUnitId);
+app.post("/get-org-unit-repos-by-ids", orgUnitsController.getOUDeptReposByIds);
 
 
 

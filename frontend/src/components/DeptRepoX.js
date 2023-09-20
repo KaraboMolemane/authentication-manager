@@ -1,9 +1,10 @@
-import React from 'react';
-import { Form, Item, Label } from 'devextreme-react/form';
+import React from "react";
+import { Form, Item, Label } from "devextreme-react/form";
 import "devextreme/dist/css/dx.light.css";
 // import DepartmentSelectBox from "./DepartmentSelectBox";
-import DepartmentSelectBox from './DepartmentSelectBoxX';
-import ReposTableView from "./ReposTableView";
+import DepartmentSelectBox from "./DepartmentSelectBoxX";
+// import ReposTableView from "./ReposTableView";
+import ReposTableView from "./ReposTableViewX";
 
 class DeptRepo extends React.Component {
   constructor(props) {
@@ -18,10 +19,7 @@ class DeptRepo extends React.Component {
 
   render() {
     return (
-      <Form
-        labelLocation="top"
-        className="form-container"
-      >
+      <Form labelLocation="top" className="form-container">
         <Item render={this.renderSelectBox}>
           {/* <Label text="Department" /> */}
         </Item>
@@ -33,17 +31,26 @@ class DeptRepo extends React.Component {
   }
 
   renderSelectBox() {
-    return <DepartmentSelectBox
-      ouId={this.props.data.data.id}
-      departmentId={this.state.chosenDepartmentId}
-      onDepartmentChanged={this.departmentChanged} />;
+    return (
+      <DepartmentSelectBox
+        ouId={this.props.data.data.id}
+        departmentId={this.state.chosenDepartmentId}
+        onDepartmentChanged={this.departmentChanged}
+      />
+    );
   }
 
   renderReposTableView() {
-    return <ReposTableView departmentId={this.state.chosenDepartmentId} />;
+    return (
+      <ReposTableView
+        ouId={this.props.data.data.id}
+        departmentId={this.state.chosenDepartmentId}
+      />
+    );
   }
 
   departmentChanged(departmentId) {
+    console.log('dept changed', departmentId)
     this.setState({
       chosenDepartmentId: departmentId,
     });
