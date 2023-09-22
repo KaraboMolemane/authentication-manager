@@ -16,9 +16,9 @@ exports.addNewOrgUnit = async (req, res) => {
     })
     .catch(function (error) {
       console.log(error);
-      res
-        .status(500)
-        .send({ message: "Some error occurred while creating the organisational_unit." });
+      res.status(500).send({
+        message: "Some error occurred while creating the organisational_unit.",
+      });
     });
   // https://codeforgeek.com/insert-a-document-into-mongodb-using-mongoose/
 };
@@ -30,16 +30,16 @@ exports.getAllOrgUnits = async (req, res) => {
     res.send(orgUnits);
   } catch (error) {
     throw error;
-  }  
+  }
 };
-
 
 // Get departments belonging to an OU using the OU Id
 exports.getDepartmentsByOrgUnitId = async (req, res) => {
   try {
     const orgUnitId = req.body.id;
     const orgUnit = await OrganisationalUnit.find({ id: orgUnitId });
-    const departments = orgUnit[0].departments;
+    let departments = [];
+    if (orgUnit.length > 0) departments = orgUnit[0].departments;
     res.send(departments);
   } catch (error) {
     throw error;
@@ -53,15 +53,15 @@ exports.getOUDeptReposByIds = async (req, res) => {
     const orgUnitId = req.body.ouId;
     const deptId = req.body.deptId;
 
-    console.log('orgUnitId', orgUnitId);
-    console.log('deptId', deptId);
-
     const orgUnit = await OrganisationalUnit.find({
       id: orgUnitId,
-      departments: [{id: deptId}]
     });
-    // const departments = orgUnit[0].departments;
-    res.send(orgUnit);
+    let departments = orgUnit[0].departments;
+    let department = departments.filter(
+      (department) => department.id === deptId
+    );
+    deptRepo = department[0].repo;
+    res.send(deptRepo);
   } catch (error) {
     throw error;
   }

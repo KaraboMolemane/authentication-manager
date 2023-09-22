@@ -20,12 +20,16 @@ import OrdersTab from "./OrdersTab.js";
 // import DeptRepo from "./DeptRepo.js";
 import DeptRepo from "./DeptRepoX.js";
 import Header from "./Header.js";
+import OrgUnitsSelect from "./OrgUnitsSelect.js";
+import DepartmentSelectBox from "./DepartmentSelectBox.js";
 
 function Repos() {
   //Declare states
   const [error, setError] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [orgUnits, setOrgUnits] = useState([]);
+  const [activeOrgUnit, setActiveOrgUnit] = useState({});
+  const [activeDepartment, setActiveDepartment] = useState({});
 
   useEffect(() => {
     // Get all Organisational Units
@@ -43,11 +47,35 @@ function Repos() {
       );
   }, []);
 
+
+
+  function handleOrgUnitSelection(orgUnit) {
+    setActiveOrgUnit(orgUnit);
+  }
+
+  function handleDepartmentSelection(department) {
+    // console.log('department', department)
+    // setActiveDepartment(department);
+  }
+
   function onSaving() {}
 
   return (
     <>
       <Header />
+      <fieldset className="mb-3">
+        <legend>Make your selections to view a repo</legend>
+        <OrgUnitsSelect
+          orgUnits={orgUnits}
+          handleOrgUnitSelection={handleOrgUnitSelection}
+        />
+        <DepartmentSelectBox
+          ouId={activeOrgUnit.id}
+          departmentId={activeDepartment.id}
+          handleDepartmentSelection={handleDepartmentSelection}
+
+        />
+      </fieldset>
       <DataGrid
         dataSource={orgUnits}
         keyExpr="id"

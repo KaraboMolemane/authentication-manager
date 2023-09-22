@@ -5,37 +5,28 @@ import "devextreme/dist/css/dx.light.css";
 
 import { SelectBox } from "devextreme-react/select-box";
 
-function DepartmentSelectBox(props) {
+function DepartmentSelectBox({
+  ouId,
+  departmentId,
+  handleDepartmentSelection
+}) {
 
-  console.log("PROPS BOX", props)
     //declare state(s)
     const [error, setError] = useState(null);
     const [isLoaded, setIsLoaded] = useState(false);
-    const [items, setItems] = useState([]);
+    const [departments, setDepartments] = useState([]);
 
 
   const onValueChanged = useCallback((e) => {
-    console.log(e.previousValue);
-    console.log(e.value);
+    // console.log(e.previousValue);
+    // console.log(e.value);
+    handleDepartmentSelection(e);
   }, []);
-
-  const departmentDataDummy = [
-    { id: "1001", name: "FinanceXXX" },
-    { id: "1002", name: "ITXXX" },
-    { id: "1003", name: "WritingXXXX" },
-    { id: "1004", name: "DevelopmentXXX" },
-    { id: "1005", name: "MarketingXXX" },
-    { id: "1006", name: "SalesXXX" },
-    { id: "1007", name: "HRXXX" },
-    { id: "1008", name: "LegalXXX" },
-    { id: "1009", name: "R&DXXX" },
-    { id: "1010", name: "ProcumentXXX" },
-  ];
 
   useEffect(() => {
 
-    const orgID = {id: props.ouId}
-    console.log('orgID', orgID);
+    const orgID = {id: ouId}
+    // console.log('orgID', orgID);
     fetch("/get-depts-by-org-unit-id", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -44,31 +35,15 @@ function DepartmentSelectBox(props) {
       .then((res) => res.json())
       .then((res) => {
         console.log("res", res);
-        // setToken(res);
+        setDepartments(res);
       });
 
-
-    fetch("/get-depts-by-org-unit-id")
-      //.then((res) => res.json())
-      .then((res) => console.log('res', res))
-      .then(
-        (result) => {
-          setIsLoaded(true);
-          console.log("Departments22:", result);
-          setItems(result);
-        },
-        (error) => {
-          setIsLoaded(true);
-          console.log("error:", error);
-          setError(error);
-        }
-      );
-  }, []);
+  }, [ouId]);
 
 
   return (
     <SelectBox
-      dataSource={departmentDataDummy}
+      dataSource={departments}
       valueExpr="id"
       displayExpr="name"
       onValueChanged={onValueChanged}
