@@ -18,10 +18,11 @@ function DepartmentSelectBox({
 
 
   const onValueChanged = useCallback((e) => {
-    // console.log(e.previousValue);
-    // console.log(e.value);
-    handleDepartmentSelection(e);
-  }, []);
+    const department = departments.filter(
+      (department) => department.id === e.value
+    );
+    handleDepartmentSelection(department);
+  }, [departments]);
 
   useEffect(() => {
 

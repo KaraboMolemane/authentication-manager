@@ -54,8 +54,8 @@ function Repos() {
   }
 
   function handleDepartmentSelection(department) {
-    // console.log('department', department)
-    // setActiveDepartment(department);
+    console.log('department', department)
+    setActiveDepartment(department);
   }
 
   function onSaving() {}
@@ -77,16 +77,36 @@ function Repos() {
         />
       </fieldset>
       <DataGrid
-        dataSource={orgUnits}
-        keyExpr="id"
-        remoteOperations={true}
+        dataSource={activeDepartment.repo}
+        keyExpr="name"
         showBorders={true}
-        id="gridContainer"
+        //onSaving={onSaving}
       >
-        <MasterDetail enabled={true} component={DeptRepo} />
-        <Paging defaultPageSize={15} />
-        <Column dataField="name" />
-        <Column dataField="id" />
+        <Paging defaultPageSize={10} />
+        <HeaderFilter visible={true}>
+          <Search enabled={true} />
+        </HeaderFilter>
+        <Editing
+          mode="popup"
+          allowUpdating={true}
+          allowAdding={true}
+          allowDeleting={false}
+        >
+          <Popup title="Repo" showTitle={true} width={700} height={255} />
+          <Form>
+            <Item itemType="group" colCount={2} colSpan={2}>
+              <Item dataField="name" />
+              <Item dataField="url" />
+              <Item dataField="username" />
+              <Item dataField="password" />
+            </Item>
+          </Form>
+        </Editing>
+        <Column dataField="_id" caption="Id" width={70} />
+        <Column dataField="name" width={170} />
+        <Column dataField="url" />
+        <Column dataField="username" />
+        <Column dataField="password" />
       </DataGrid>
     </>
   );
