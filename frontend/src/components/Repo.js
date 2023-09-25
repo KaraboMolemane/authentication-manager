@@ -22,14 +22,17 @@ import DeptRepo from "./DeptRepoX.js";
 import Header from "./Header.js";
 import OrgUnitsSelect from "./OrgUnitsSelect.js";
 import DepartmentSelectBox from "./DepartmentSelectBox.js";
+import Cookies from "js-cookie";
 
 function Repos() {
   //Declare states
   const [error, setError] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
+  const [token, setToken] = useState("");
   const [orgUnits, setOrgUnits] = useState([]);
   const [activeOrgUnit, setActiveOrgUnit] = useState({});
   const [activeDepartment, setActiveDepartment] = useState({});
+  const [activeRepo, setActiveRepo] = useState([]);
 
   useEffect(() => {
     // Get all Organisational Units
@@ -45,17 +48,19 @@ function Repos() {
           setError(error);
         }
       );
+
+    console.log("user_token:", Cookies.get("user_token"));
   }, []);
-
-
 
   function handleOrgUnitSelection(orgUnit) {
     setActiveOrgUnit(orgUnit);
+    setActiveDepartment({});
+    setActiveRepo([]);
   }
 
   function handleDepartmentSelection(department) {
-    console.log('department', department)
     setActiveDepartment(department);
+    setActiveRepo(department[0].repo);
   }
 
   function onSaving() {}
@@ -69,15 +74,16 @@ function Repos() {
           orgUnits={orgUnits}
           handleOrgUnitSelection={handleOrgUnitSelection}
         />
-        <DepartmentSelectBox
-          ouId={activeOrgUnit.id}
-          departmentId={activeDepartment.id}
-          handleDepartmentSelection={handleDepartmentSelection}
-
-        />
+        <div style={{ margin: "0 40% 0 40%" }}>
+          <DepartmentSelectBox
+            ouId={activeOrgUnit.id}
+            departmentId={activeDepartment.id}
+            handleDepartmentSelection={handleDepartmentSelection}
+          />
+        </div>
       </fieldset>
       <DataGrid
-        dataSource={activeDepartment.repo}
+        dataSource={activeRepo}
         keyExpr="name"
         showBorders={true}
         //onSaving={onSaving}

@@ -1,5 +1,6 @@
 const User = require("../models/user.model");
 const jwt = require("jsonwebtoken");
+var cookieSession = require('cookie-session')
 
 // Add a new user
 exports.addNewUser = async (req, res) => {
@@ -55,15 +56,29 @@ exports.userLogin = async (req, res) => {
     let payload = {
       name: result.username,
       role: result.role,
+      departments: result.positions[0].departments_ids, 
     };
     const token = jwt.sign(JSON.stringify(payload), "jwt-secret", {
       algorithm: "HS256",
     });
+    req.app.use(cookieSession({
+      name: 'user_token',
+      // keys: [token],
+      secret: token,    
+      // Cookie Options
+      maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    }))
     res.send({ token: token, message: "Login successful!" });
   }
   else{
     res.status(403).send({ message: "Incorrect login!" });
   }
+  // https://www.w3schools.com/jsref/prop_win_sessionstorage.asp
+  // http://expressjs.com/en/resources/middleware/cookie-session.html
+  // https://stackoverflow.com/questions/10090414/express-how-to-pass-app-instance-to-routes-from-a-different-file
+  // https://www.geeksforgeeks.org/how-to-separate-routers-and-controllers-in-node-js/
+  // https://stackoverflow.com/questions/70210620/how-to-send-jwt-to-front-end-server-after-successful-login-for-storage-on-locals
+  // https://stackoverflow.com/questions/56273618/is-it-bad-to-pass-jwt-token-as-part-of-url
 }
 
 // findOne user
