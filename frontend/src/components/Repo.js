@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import "devextreme/dist/css/dx.light.css";
 import DataGrid, {
   Column,
@@ -34,6 +34,11 @@ function Repos() {
   const [activeDepartment, setActiveDepartment] = useState({});
   const [activeRepo, setActiveRepo] = useState([]);
 
+  const queryString = window.location.search;
+  const searchParams = new URLSearchParams(queryString);
+  const userToken = useRef(searchParams.get("login"));
+  console.log("userToken", userToken);
+
   useEffect(() => {
     // Get all Organisational Units
     fetch("/get-all-org-units")
@@ -48,8 +53,6 @@ function Repos() {
           setError(error);
         }
       );
-
-    console.log("user_token:", Cookies.get("user_token"));
   }, []);
 
   function handleOrgUnitSelection(orgUnit) {
@@ -60,7 +63,26 @@ function Repos() {
 
   function handleDepartmentSelection(department) {
     setActiveDepartment(department);
-    setActiveRepo(department[0].repo);
+    //setActiveRepo(department[0].repo);
+    console.log("department", department);
+
+    fetch("/get-dept-repo-for-user", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + userToken.current,
+      },
+      body: JSON.stringify({
+        ouId: activeOrgUnit.id,
+        deptId: department[0].id,
+      }),
+    })
+      //.then((res) => console.log('res', res))
+      .then((res) => res.json())
+      .then((res) => {
+        console.log("Resource res", res);
+        setActiveRepo(res.repo);
+      });
   }
 
   function onSaving() {}

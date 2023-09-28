@@ -61,13 +61,13 @@ exports.userLogin = async (req, res) => {
     const token = jwt.sign(JSON.stringify(payload), "jwt-secret", {
       algorithm: "HS256",
     });
-    req.app.use(cookieSession({
-      name: 'user_token',
-      // keys: [token],
-      secret: token,    
-      // Cookie Options
-      maxAge: 24 * 60 * 60 * 1000 // 24 hours
-    }))
+    // req.app.use(cookieSession({
+    //   name: 'user_token',
+    //   // keys: [token],
+    //   secret: token,    
+    //   // Cookie Options
+    //   maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    // }))
     res.send({ token: token, message: "Login successful!" });
   }
   else{
