@@ -4,12 +4,15 @@ const bodyParser = require("body-parser");
 const fs = require("fs");
 const helmet = require("helmet");
 const mongoose = require('mongoose');
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
+const cookieParser = require('cookie-parser');
+
 require("dotenv").config();
 
 const app = express();
 app.use(bodyParser.urlencoded({ extended: true }))
 app.use(bodyParser.json())
+app.use(cookieParser());
 const port = 8000;
 
 // import constrollers 

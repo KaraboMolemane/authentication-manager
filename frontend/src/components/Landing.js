@@ -1,9 +1,7 @@
-import { ToastContainer, toast } from 'react-toastify';
-import 'react-toastify/dist/ReactToastify.css';
-
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 function Landing() {
-  
   function handleSignIn(e) {
     e.preventDefault();
     const credentials = {
@@ -18,11 +16,12 @@ function Landing() {
     })
       .then((res) => res.json())
       .then((res) => {
-        toast(res.message);         
-        if(res.token){
+        toast(res.message);
+        if (res.message !== 'Incorrect login!') {
           // redirect for successful login
-          window.location.href = "/repo?login="+res.token;
-        }        
+          // window.location.href = "/repo?login="+res.token;
+          window.location.href = "/repo";
+        }
       });
   }
 
@@ -42,11 +41,11 @@ function Landing() {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(user),
-    })      
-    .then((res) => res.json())
-    .then((res) => {
-      toast(res.message);      
-    });
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        toast(res.message);
+      });
   }
 
   function clearModalOnClose() {
@@ -58,7 +57,6 @@ function Landing() {
 
   return (
     <>
-
       <div className="row">
         <div className="col-3"></div>
         <div className="col-6">

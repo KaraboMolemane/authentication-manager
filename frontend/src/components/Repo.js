@@ -34,10 +34,12 @@ function Repos() {
   const [activeDepartment, setActiveDepartment] = useState({});
   const [activeRepo, setActiveRepo] = useState([]);
 
-  const queryString = window.location.search;
-  const searchParams = new URLSearchParams(queryString);
-  const userToken = useRef(searchParams.get("login"));
-  console.log("userToken", userToken);
+  // const queryString = window.location.search;
+  // const searchParams = new URLSearchParams(queryString);
+  // // const userToken = useRef(searchParams.get("login"));
+  const cookies = document.cookie;
+  const indexToken = cookies.indexOf("token=") + 6;
+  const userToken = useRef(cookies.substring(indexToken));
 
   useEffect(() => {
     // Get all Organisational Units
