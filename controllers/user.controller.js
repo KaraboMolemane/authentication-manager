@@ -92,3 +92,9 @@ const findOneUser = async (req) => {
   // https://mongoosejs.com/docs/api/model.html#Model.findOne()
   // https://www.mongodb.com/docs/manual/reference/operator/query/and/
 };
+
+// Logout
+exports.userLogOut = async (req, res) => {
+  res.clearCookie('token');
+  res.send({msg:'Logged out, enjoy your day!' });
+}

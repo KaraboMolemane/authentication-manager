@@ -121,7 +121,6 @@ exports.getDeptRepoForUser = async (req, res) => {
 
 exports.addNewCredentialsToDeptRepo = async (req, res) => {
   try {
-    console.log("in function");
     const orgUnitId = req.body.ouId;
     const deptId = req.body.deptId;
     const name = req.body.name;
@@ -133,7 +132,6 @@ exports.addNewCredentialsToDeptRepo = async (req, res) => {
     // verify the JWT and user permissions
     const decoded = jwt.verify(token, "jwt-secret");
     if (decoded.role === "admin" || decoded.departments.includes(deptId)) {
-      console.log("inside if");
       const result = await OrganisationalUnit.updateOne(
         {
           id: orgUnitId,
@@ -150,8 +148,64 @@ exports.addNewCredentialsToDeptRepo = async (req, res) => {
         },
         { arrayFilters: [{ "department.id": { $eq: deptId } }] }
       );
-      console.log("result", result);
       res.send({ msg: "The new entry has been added to the repo" });
+    } else {
+      res.status(403).send({
+        msg: "Your JWT was verified, but you do not have access to this resource. Please contact your admin to get access to this repo.",
+      });
+    }
+  } catch (error) {
+    console.log("error", error);
+
+    res.sendStatus(401);
+  }
+  // https://www.mongodb.com/docs/manual/reference/operator/update/push/
+  // https://www.mongodb.com/docs/drivers/node/current/fundamentals/crud/write-operations/embedded-arrays/#:~:text=To%20update%20the%20first%20array,use%20the%20filtered%20positional%20operator.
+  // https://www.mongodb.com/community/forums/t/updating-nested-array-of-objects-within-am-array-of-objects/246979
+};
+
+exports.editDeptRepoCredentials = async (req, res) => {
+  try {
+    console.log("in function");
+    const orgUnitId = req.body.ouId;
+    const deptId = req.body.deptId;
+    const repoKey = req.body.repoKey;
+    const name = req.body.name;
+    const url = req.body.url;
+    const username = req.body.username;
+    const password = req.body.password;
+    const token = req.headers["authorization"].split(" ")[1];
+
+    // verify the JWT and user permissions
+    const decoded = jwt.verify(token, "jwt-secret");
+    if (
+      decoded.role === "admin" ||
+      (decoded.departments.includes(deptId) && decoded.role === "management")
+    ) {
+      console.log("inside if");
+      const result = await OrganisationalUnit.updateOne(
+        {
+          id: orgUnitId,
+        },
+        {
+          $set: {
+            "departments.$[department].repo.$[credential]": {
+              name: name,
+              url: url,
+              username: username,
+              password: password,
+            },
+          },
+        },
+        {
+          arrayFilters: [
+            { "department.id": { $eq: deptId } },
+            { "credential.name": { $eq: repoKey } },
+          ],
+        }
+      );
+      console.log("result", result);
+      res.send({ msg: "The repo has been edited" });
     } else {
       console.log("inside 403");
       res.status(403).send({
@@ -161,11 +215,6 @@ exports.addNewCredentialsToDeptRepo = async (req, res) => {
   } catch (error) {
     console.log("inside 401");
     console.log("error", error);
-
     res.sendStatus(401);
   }
-  // https://www.mongodb.com/docs/manual/reference/operator/update/push/
-  // https://www.mongodb.com/docs/drivers/node/current/fundamentals/crud/write-operations/embedded-arrays/#:~:text=To%20update%20the%20first%20array,use%20the%20filtered%20positional%20operator.
 };
-
-

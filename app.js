@@ -47,7 +47,8 @@ mongoose.connect(process.env.MONGODB_URI, {
 
 //endpoints - Users 
 app.post("/user-add-new", userController.addNewUser);
-app.post("/login", userController.userLogin)
+app.post("/login", userController.userLogin);
+app.get("/logout", userController.userLogOut);
 
 
 // endpoints- OrgUnits
@@ -56,6 +57,7 @@ app.get("/get-all-org-units", orgUnitsController.getAllOrgUnits);
 app.post("/get-depts-by-org-unit-id", orgUnitsController.getDepartmentsByOrgUnitId);
 app.post("/get-org-unit-repos-by-ids", orgUnitsController.getOUDeptReposByIds);
 app.post("/get-dept-repo-for-user", orgUnitsController.getDeptRepoForUser)
-app.put("/add-new-credentials-to-dept-repo", orgUnitsController.addNewCredentialsToDeptRepo)
+app.put("/add-new-credentials-to-dept-repo", orgUnitsController.addNewCredentialsToDeptRepo);
+app.put("/edit-dept-repo-credentials", orgUnitsController.editDeptRepoCredentials);
 
 
