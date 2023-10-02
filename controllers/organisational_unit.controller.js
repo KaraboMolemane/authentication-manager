@@ -74,8 +74,6 @@ exports.getOUDeptReposByIds = async (req, res) => {
 // Be sure to verify the JWT and user permissions before providing access.
 exports.getDeptRepoForUser = async (req, res) => {
   try {
-    console.log("req.body", req.body);
-    console.log("req.headers", req.headers);
     const orgUnitId = req.body.ouId;
     const deptId = req.body.deptId;
     //const userToken = req.body.userToken;
@@ -92,7 +90,10 @@ exports.getDeptRepoForUser = async (req, res) => {
 
     const decoded = jwt.verify(token, "jwt-secret");
 
-    if (decoded.departments.includes(department[0].id)) {
+    if (
+      decoded.role === "admin" ||
+      decoded.departments.includes(department[0].id)
+    ) {
       deptRepo = department[0].repo;
       console.log("deptRepo", deptRepo);
       res.send({ repo: deptRepo });
@@ -110,9 +111,61 @@ exports.getDeptRepoForUser = async (req, res) => {
             password: "",
           },
         ],
+        msg: "Your JWT was verified, but you do not have access to this resource. Please contact your admin to get access to this repo.",
       });
     }
   } catch (error) {
     res.sendStatus(401);
   }
 };
+
+exports.addNewCredentialsToDeptRepo = async (req, res) => {
+  try {
+    console.log("in function");
+    const orgUnitId = req.body.ouId;
+    const deptId = req.body.deptId;
+    const name = req.body.name;
+    const url = req.body.url;
+    const username = req.body.username;
+    const password = req.body.password;
+    const token = req.headers["authorization"].split(" ")[1];
+
+    // verify the JWT and user permissions
+    const decoded = jwt.verify(token, "jwt-secret");
+    if (decoded.role === "admin" || decoded.departments.includes(deptId)) {
+      console.log("inside if");
+      const result = await OrganisationalUnit.updateOne(
+        {
+          id: orgUnitId,
+        },
+        {
+          $push: {
+            "departments.$[department].repo": {
+              name: name,
+              url: url,
+              username: username,
+              password: password,
+            },
+          },
+        },
+        { arrayFilters: [{ "department.id": { $eq: deptId } }] }
+      );
+      console.log("result", result);
+      res.send({ msg: "The new entry has been added to the repo" });
+    } else {
+      console.log("inside 403");
+      res.status(403).send({
+        msg: "Your JWT was verified, but you do not have access to this resource. Please contact your admin to get access to this repo.",
+      });
+    }
+  } catch (error) {
+    console.log("inside 401");
+    console.log("error", error);
+
+    res.sendStatus(401);
+  }
+  // https://www.mongodb.com/docs/manual/reference/operator/update/push/
+  // https://www.mongodb.com/docs/drivers/node/current/fundamentals/crud/write-operations/embedded-arrays/#:~:text=To%20update%20the%20first%20array,use%20the%20filtered%20positional%20operator.
+};
+
+

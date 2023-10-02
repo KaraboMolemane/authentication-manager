@@ -28,7 +28,7 @@ function Repos() {
   //Declare states
   const [error, setError] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
-  const [token, setToken] = useState("");
+  // const [token, setToken] = useState("");
   const [orgUnits, setOrgUnits] = useState([]);
   const [activeOrgUnit, setActiveOrgUnit] = useState({});
   const [activeDepartment, setActiveDepartment] = useState({});
@@ -40,6 +40,7 @@ function Repos() {
   const cookies = document.cookie;
   const indexToken = cookies.indexOf("token=") + 6;
   const userToken = useRef(cookies.substring(indexToken));
+  // console.log(userToken.current)
 
   useEffect(() => {
     // Get all Organisational Units
@@ -47,11 +48,11 @@ function Repos() {
       .then((res) => res.json())
       .then(
         (result) => {
-          setIsLoaded(true);
+          // setIsLoaded(true);
           setOrgUnits(result);
         },
         (error) => {
-          setIsLoaded(true);
+          // setIsLoaded(true);
           setError(error);
         }
       );
@@ -83,9 +84,23 @@ function Repos() {
       .then((res) => res.json())
       .then((res) => {
         console.log("Resource res", res);
+        setIsLoaded(true);
         setActiveRepo(res.repo);
+      },
+      (error) => {
+        setIsLoaded(true);
+        setError(error);
       });
   }
+
+  // let results = "Make selections above to view repo details.";
+  // if (error) {
+  //   results = error.message;
+  // } else if (!isLoaded && !activeRepo) {
+  //   results = "Loading...";
+  // } else if(isLoaded){
+  //   results = "Repo details:";
+  // }
 
   function onSaving() {}
 
@@ -106,6 +121,7 @@ function Repos() {
           />
         </div>
       </fieldset>
+      {/* <p>{results}</p> */}
       <DataGrid
         dataSource={activeRepo}
         keyExpr="name"
