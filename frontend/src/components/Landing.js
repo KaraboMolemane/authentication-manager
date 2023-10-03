@@ -17,10 +17,18 @@ function Landing() {
       .then((res) => res.json())
       .then((res) => {
         toast(res.message);
-        if (res.message !== 'Incorrect login!') {
+        if (res.message !== "Incorrect login!") {
           // redirect for successful login
           // window.location.href = "/repo?login="+res.token;
-          window.location.href = "/repo";
+          window.location.href =
+            "/repo?username=" +
+            res.username +
+            "&firstname=" +
+            res.firstname +
+            "&lastname=" +
+            res.lastname +
+            "&role=" +
+            res.role;
         }
       });
   }

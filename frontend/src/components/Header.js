@@ -3,20 +3,24 @@ import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 function Header() {
+  const queryString = window.location.search;
+  const searchParams = new URLSearchParams(queryString);
+  const username = searchParams.get("username");
+  const firstname = searchParams.get("firstname");
+  const lastname = searchParams.get("lastname");
+  const role = searchParams.get("role");
+
   function logOut() {
     fetch("/logout")
       .then((res) => res.json())
       .then(
         (result) => {
-          // setIsLoaded(true);
-          // setItems(result);
           toast(result.msg);
-          //Route to homepage
+          //Route to homepage after logging out
           window.location.href = "/";
         },
         (error) => {
-          // setIsLoaded(true);
-          // setError(error);
+          toast(error.msg);
         }
       );
   }
@@ -36,12 +40,12 @@ function Header() {
               role="button"
               aria-expanded="false"
             >
-              User
+              {username}
             </a>
             <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
               <li class="dropdown-header">
-                <h6>Kevin Anderson</h6>
-                <span>Web Designer</span>
+                <h6>{firstname + " " + lastname}</h6>
+                <span>{"Role: " + role}</span>
               </li>
               <li>
                 <hr class="dropdown-divider" />
