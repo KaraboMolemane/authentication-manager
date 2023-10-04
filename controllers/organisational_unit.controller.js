@@ -95,7 +95,6 @@ exports.getDeptRepoForUser = async (req, res) => {
       decoded.departments.includes(department[0].id)
     ) {
       deptRepo = department[0].repo;
-      console.log("deptRepo", deptRepo);
       res.send({ repo: deptRepo });
       // res.send({ msg: "Success!" });
     } else {
@@ -189,7 +188,7 @@ exports.editDeptRepoCredentials = async (req, res) => {
         },
         {
           $set: {
-            "departments.$[department].repo.$[credential]": {
+            "departments.$[dept].repo.$[r]": {
               name: name,
               url: url,
               username: username,
@@ -199,8 +198,8 @@ exports.editDeptRepoCredentials = async (req, res) => {
         },
         {
           arrayFilters: [
-            { "department.id": { $eq: deptId } },
-            { "credential.name": { $eq: repoKey } },
+            { "dept.id": { $eq: deptId } },
+            { "r.name": { $eq: repoKey } },
           ],
         }
       );
