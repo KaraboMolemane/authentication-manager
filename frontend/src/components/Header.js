@@ -26,15 +26,15 @@ function Header() {
   }
 
   return (
-    <div class="bd-example">
-      <nav id="navbar-example2" class="navbar bg-light px-3">
-        <a class="navbar-brand" href="#">
+    <div className="bd-example">
+      <nav id="navbar-example2" className="navbar bg-light px-3">
+        <a className="navbar-brand" href="#">
           Department Repo
         </a>
-        <ul class="nav nav-pills">
-          <li class="nav-item dropdown">
+        <ul className="nav nav-pills">
+          <li className="nav-item dropdown">
             <a
-              class="nav-link dropdown-toggle"
+              className="nav-link dropdown-toggle"
               data-bs-toggle="dropdown"
               href="#"
               role="button"
@@ -42,61 +42,61 @@ function Header() {
             >
               {username}
             </a>
-            <ul class="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
-              <li class="dropdown-header">
+            <ul className="dropdown-menu dropdown-menu-end dropdown-menu-arrow profile">
+              <li className="dropdown-header">
                 <h6>{firstname + " " + lastname}</h6>
                 <span>{"Role: " + role}</span>
               </li>
               <li>
-                <hr class="dropdown-divider" />
+                <hr className="dropdown-divider" />
               </li>
 
               <li>
                 <a
-                  class="dropdown-item d-flex align-items-center disabled"
+                  className="dropdown-item d-flex align-items-center disabled"
                   href="users-profile.html"
                 >
-                  <i class="bi bi-person"></i>
+                  <i className="bi bi-person"></i>
                   <span>My Profile</span>
                 </a>
               </li>
               <li>
-                <hr class="dropdown-divider" />
+                <hr className="dropdown-divider" />
               </li>
 
               <li>
                 <a
-                  class="dropdown-item d-flex align-items-center disabled"
+                  className="dropdown-item d-flex align-items-center disabled"
                   href="users-profile.html"
                 >
-                  <i class="bi bi-gear"></i>
+                  <i className="bi bi-gear"></i>
                   <span>Account Settings</span>
                 </a>
               </li>
               <li>
-                <hr class="dropdown-divider" />
+                <hr className="dropdown-divider" />
               </li>
 
               <li>
                 <a
-                  class="dropdown-item d-flex align-items-center disabled"
+                  className="dropdown-item d-flex align-items-center disabled"
                   href="pages-faq.html"
                 >
-                  <i class="bi bi-question-circle"></i>
+                  <i className="bi bi-question-circle"></i>
                   <span>Need Help?</span>
                 </a>
               </li>
               <li>
-                <hr class="dropdown-divider" />
+                <hr className="dropdown-divider" />
               </li>
 
               <li>
                 <a
-                  class="dropdown-item d-flex align-items-center"
+                  className="dropdown-item d-flex align-items-center"
                   href="#"
                   onClick={() => logOut()}
                 >
-                  <i class="bi bi-box-arrow-right"></i>
+                  <i className="bi bi-box-arrow-right"></i>
                   <span>Sign Out</span>
                 </a>
               </li>

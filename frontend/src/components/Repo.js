@@ -26,9 +26,6 @@ function Repos() {
   const [activeDepartment, setActiveDepartment] = useState({});
   const [activeRepo, setActiveRepo] = useState([]);
 
-  // const queryString = window.location.search;
-  // const searchParams = new URLSearchParams(queryString);
-  // // const userToken = useRef(searchParams.get("login"));
   const cookies = document.cookie;
   const indexToken = cookies.indexOf("token=") + 6;
   const userToken = useRef(cookies.substring(indexToken));
@@ -98,7 +95,53 @@ function Repos() {
 
   const onSaving = (e) => {
     console.log("e:", e);
-  }
+
+    const repos = e.changes;
+    if (repos.length !== 0) {
+      repos.array.forEach((element, index) => {
+        const repo = {
+          ouId: activeOrgUnit.id,
+          deptId: activeDepartment.id,
+          name: element.name,
+          url: element.url,
+          username: element.username,
+          password: element.password,
+        };
+
+        if (e.changes[0].type === "update") {
+          // EDIT existing repo
+          // job.id = element.key ? element.key : editingModeID.current;
+          repo.repoKey = element.name;
+
+          fetch("/edit-dept-repo-credentials", {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + userToken.current,
+            },
+            body: JSON.stringify(repo),
+          }).then(() => {
+            console.log("Frontend - repo  credentials edited");
+            // editingModeID.current = 0; //Reset editingMode,
+          });
+        } else {
+          // ADD new repo
+          fetch("/add-new-credentials-to-dept-repo", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + userToken.current,
+            },
+            body: JSON.stringify(repo),
+          }).then(() => {
+            console.log("Frontend - new repo credentials added");
+          });
+        }
+
+        // window.location.href = "/";
+      });
+    }
+  };
 
   return (
     <>
@@ -145,7 +188,7 @@ function Repos() {
             </Item>
           </Form>
         </Editing>
-        <Column dataField="_id" caption="Id" width={70} />
+        {/* <Column dataField="_id" caption="Id" width={70} /> */}
         <Column dataField="name" width={170} />
         <Column dataField="url" />
         <Column dataField="username" />
