@@ -16,8 +16,8 @@ const OrgUnitsShema = mongoose.Schema({
       id: {type: String, required: false, unique: true},
       name: {type: String, required: false},
       repo: [{
-        _id: {type: String, required: false, unique: true},
-        name: {type: String, required: false},
+        // _id: {type: String, required: false, unique: true},
+        name: {type: String, required: false, unique: true},
         url: {type: String, required: false},
         username: {type: String, required: false},
         password: {type: String, required: false},
