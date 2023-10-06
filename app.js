@@ -49,6 +49,7 @@ mongoose.connect(process.env.MONGODB_URI, {
 app.post("/user-add-new", userController.addNewUser);
 app.post("/login", userController.userLogin);
 app.get("/logout", userController.userLogOut);
+app.put("/edit-user-role", userController.editUserRole);
 
 
 // endpoints- OrgUnits

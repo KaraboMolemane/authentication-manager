@@ -16,7 +16,7 @@ import Header from "./Header.js";
 import OrgUnitsSelect from "./OrgUnitsSelect.js";
 import DepartmentSelectBox from "./DepartmentSelectBox.js";
 
-function Repos() {
+function Repo() {
   //Declare states
   const [error, setError] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
@@ -198,4 +198,4 @@ function Repos() {
   );
 }
 
-export default Repos;
+export default Repo;

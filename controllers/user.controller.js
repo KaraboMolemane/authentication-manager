@@ -57,15 +57,13 @@ exports.userLogin = async (req, res) => {
     const token = jwt.sign(JSON.stringify(payload), "jwt-secret", {
       algorithm: "HS256",
     });
-    res
-      .cookie("token", token)
-      .send({
-        message: "Login successful!",
-        username: result.username,
-        firstname: result.firstname,
-        lastname: result.lastname,
-        role: result.role,
-      });
+    res.cookie("token", token).send({
+      message: "Login successful!",
+      username: result.username,
+      firstname: result.firstname,
+      lastname: result.lastname,
+      role: result.role,
+    });
     // res.send({ token: token, message: "Login successful!" });
   } else {
     res.status(403).send({ message: "Incorrect login!" });
@@ -105,4 +103,28 @@ exports.userLogOut = async (req, res) => {
       msg: "Operation failed. Please try again or contact your admin.",
     });
   }
+};
+
+exports.editUserRole = async (req, res) => {
+  try {
+    const token = req.headers["authorization"].split(" ")[1];
+    const decoded = jwt.verify(token, "jwt-secret");
+    if (decoded.role === "admin") {
+      const filter = { _id: req.body.userId };
+      const update = { role: req.body.newRole };
+      // console.log("filter", filter)
+      // console.log("update", update)
+      const result = await User.findOneAndUpdate(filter, update, { new: true });
+      console.log("result", result);
+      res.send({ msg: "The user role has been updated" });
+    } else {
+      res.status(403).send({
+        msg: "Your JWT was verified, but you do not have access to this resource. Please contact your admin to get access to this repo.",
+      });
+    }
+  } catch (error) {
+    console.log("error", error);
+    res.sendStatus(401);
+  }
+  // https://mongoosejs.com/docs/tutorials/findoneandupdate.html
 };

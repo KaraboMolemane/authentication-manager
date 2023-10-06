@@ -87,7 +87,6 @@ exports.getDeptRepoForUser = async (req, res) => {
     );
 
     // check if user has access to the department repo
-
     const decoded = jwt.verify(token, "jwt-secret");
 
     if (
