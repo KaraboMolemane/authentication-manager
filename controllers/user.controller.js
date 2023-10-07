@@ -45,6 +45,17 @@ const findUserByUsername = async (req) => {
   }
 };
 
+// Get all users
+exports.getAllUsers = async (req, res) => {
+  try {
+    result = await User.find({});
+    res.send(result);
+  } catch (error) {
+    res.sendStatus(401);
+  }
+  // https://mongoosejs.com/docs/api/model.html#Model.find()
+};
+
 // Login
 exports.userLogin = async (req, res) => {
   let result = await findOneUser(req);

@@ -9,6 +9,7 @@ import DataGrid, {
   Form,
   HeaderFilter,
   Search,
+  Lookup,
 } from "devextreme-react/data-grid";
 import "devextreme-react/text-area";
 import { Item } from "devextreme-react/form";
@@ -25,11 +26,26 @@ function Repo() {
   const [activeOrgUnit, setActiveOrgUnit] = useState({});
   const [activeDepartment, setActiveDepartment] = useState({});
   const [activeRepo, setActiveRepo] = useState([]);
+  const [allusers, setAllUsers] = useState([]);
 
   const cookies = document.cookie;
   const indexToken = cookies.indexOf("token=") + 6;
   const userToken = useRef(cookies.substring(indexToken));
   // console.log(userToken.current)
+  const roles = [
+    {
+      ID: "normal",
+      Name: "normal",
+    },
+    {
+      ID: "management",
+      Name: "management",
+    },
+    {
+      ID: "admin",
+      Name: "admin",
+    },
+  ];
 
   useEffect(() => {
     // Get all Organisational Units
@@ -82,6 +98,20 @@ function Repo() {
           setError(error);
         }
       );
+  }
+
+  const getAllUsers = (e) => {
+    fetch("/get-all-users")
+    .then((res) => res.json())
+    .then(
+      (result) => {
+        setAllUsers(result);
+      },
+      (error) => {
+        console.log(error.msg);
+      }
+    );
+
   }
 
   // let results = "Make selections above to view repo details.";
@@ -145,7 +175,7 @@ function Repo() {
 
   return (
     <>
-      <Header />
+      <Header getAllUsers={getAllUsers}/>
       <fieldset className="mb-3">
         <legend>Make your selections to view a repo</legend>
         <OrgUnitsSelect
@@ -194,6 +224,82 @@ function Repo() {
         <Column dataField="username" />
         <Column dataField="password" />
       </DataGrid>
+      {/* Modal for editing user roles */}
+      <article class="my-3" id="modal">
+        <div>
+          <div class="bd-example">
+            <div class="d-flex justify-content-between flex-wrap">
+              <button
+                type="button"
+                class="btn btn-primary"
+                data-bs-toggle="modal"
+                data-bs-target="#staticBackdropLive"
+              >
+                Edit user roles
+              </button>
+            </div>
+          </div>
+          <div
+            class="modal fade"
+            id="staticBackdropLive"
+            data-bs-backdrop="static"
+            data-bs-keyboard="false"
+            tabindex="-1"
+            aria-labelledby="staticBackdropLiveLabel"
+            aria-hidden="true"
+          >
+            <div class="modal-dialog">
+              <div class="modal-content">
+                <div class="modal-header">
+                  <h5 class="modal-title" id="staticBackdropLiveLabel">
+                    Edit user roles
+                  </h5>
+                  <button
+                    type="button"
+                    class="btn-close"
+                    data-bs-dismiss="modal"
+                    aria-label="Close"
+                  ></button>
+                </div>
+                <div class="modal-body">
+                  <DataGrid
+                    dataSource={allusers}
+                    keyExpr="_id"
+                    showBorders={true}
+                    // onSaving={onSaving}
+                  >
+                    <Paging defaultPageSize={10} />
+                    <Editing mode="batch" allowUpdating={true} />
+                    <Column dataField="_id" caption="Id" />
+                    <Column dataField="firstname" />
+                    <Column dataField="lastname" />
+                    <Column dataField="username" />
+                    <Column dataField="role">
+                      <Lookup
+                        dataSource={roles}
+                        displayExpr="Name"
+                        valueExpr="ID"
+                      />
+                    </Column>
+                  </DataGrid>
+                </div>
+                <div class="modal-footer">
+                  <button
+                    type="button"
+                    class="btn btn-secondary"
+                    data-bs-dismiss="modal"
+                  >
+                    Close
+                  </button>
+                  <button type="button" class="btn btn-primary">
+                    Understood
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </article>
     </>
   );
 }

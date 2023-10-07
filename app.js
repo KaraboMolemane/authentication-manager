@@ -47,6 +47,7 @@ mongoose.connect(process.env.MONGODB_URI, {
 
 //endpoints - Users 
 app.post("/user-add-new", userController.addNewUser);
+app.get("/get-all-users", userController.getAllUsers);
 app.post("/login", userController.userLogin);
 app.get("/logout", userController.userLogOut);
 app.put("/edit-user-role", userController.editUserRole);
