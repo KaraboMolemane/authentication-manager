@@ -171,6 +171,10 @@ function Repo() {
     }
   }
 
+  function handleSavingUserRoles(e) {
+    console.log("handleSavingUserRoles:", e);
+  }
+
   return (
     <>
       <Header getAllUsers={getAllUsers} />
@@ -225,18 +229,6 @@ function Repo() {
       {/* Modal for editing user roles */}
       <article class="my-3" id="modal">
         <div>
-<div class="bd-example">
-            <div class="d-flex justify-content-between flex-wrap">
-              <button
-                type="button"
-                class="btn btn-primary"
-                data-bs-toggle="modal"
-                data-bs-target="#staticBackdropLive"
-              >
-                Edit user roles
-              </button>
-            </div>
-          </div>
           <div
             class="modal fade"
             id="staticBackdropLive"
@@ -264,7 +256,7 @@ function Repo() {
                     dataSource={allusers}
                     keyExpr="_id"
                     showBorders={true}
-                    // onSaving={onSaving}
+                    onSaving={handleSavingUserRoles}
                   >
                     <Paging defaultPageSize={10} />
                     <Editing mode="batch" allowUpdating={true} />
@@ -288,9 +280,6 @@ function Repo() {
                     data-bs-dismiss="modal"
                   >
                     Close
-                  </button>
-                  <button type="button" class="btn btn-primary">
-                    Understood
                   </button>
                 </div>
               </div>
