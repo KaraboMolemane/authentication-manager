@@ -81,7 +81,7 @@ function Header({
 
               <li>
                 <a
-                  className="dropdown-item d-flex align-items-center "
+                  className={(role === "admin")? "dropdown-item d-flex align-items-center" : "dropdown-item d-flex align-items-center disabled"}
                   href="pages-faq.html"
                   data-bs-toggle="modal"
                   data-bs-target="#staticBackdropLive"
@@ -96,7 +96,7 @@ function Header({
 
               <li>
                 <a
-                  className="dropdown-item d-flex align-items-center "
+                  className={(role === "admin")? "dropdown-item d-flex align-items-center" : "dropdown-item d-flex align-items-center disabled"}
                   href="pages-faq.html"
                 >
                   <span>Reassign users</span>

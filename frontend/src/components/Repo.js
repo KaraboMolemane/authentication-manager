@@ -1,15 +1,14 @@
 import { useEffect, useState, useRef } from "react";
 import "../App.css";
-import "devextreme/dist/css/dx.light.css";
 import DataGrid, {
   Column,
   Editing,
   Popup,
   Paging,
-  Form,
   HeaderFilter,
   Search,
   Lookup,
+  Form,
 } from "devextreme-react/data-grid";
 import "devextreme-react/text-area";
 import { Item } from "devextreme-react/form";
@@ -100,18 +99,17 @@ function Repo() {
       );
   }
 
-  const getAllUsers = (e) => {
+  function getAllUsers(e) {
     fetch("/get-all-users")
-    .then((res) => res.json())
-    .then(
-      (result) => {
-        setAllUsers(result);
-      },
-      (error) => {
-        console.log(error.msg);
-      }
-    );
-
+      .then((res) => res.json())
+      .then(
+        (result) => {
+          setAllUsers(result);
+        },
+        (error) => {
+          console.log(error.msg);
+        }
+      );
   }
 
   // let results = "Make selections above to view repo details.";
@@ -123,7 +121,7 @@ function Repo() {
   //   results = "Repo details:";
   // }
 
-  const onSaving = (e) => {
+  function onSaving(e) {
     console.log("e:", e);
 
     const repos = e.changes;
@@ -171,11 +169,11 @@ function Repo() {
         // window.location.href = "/";
       });
     }
-  };
+  }
 
   return (
     <>
-      <Header getAllUsers={getAllUsers}/>
+      <Header getAllUsers={getAllUsers} />
       <fieldset className="mb-3">
         <legend>Make your selections to view a repo</legend>
         <OrgUnitsSelect
@@ -227,7 +225,7 @@ function Repo() {
       {/* Modal for editing user roles */}
       <article class="my-3" id="modal">
         <div>
-          <div class="bd-example">
+<div class="bd-example">
             <div class="d-flex justify-content-between flex-wrap">
               <button
                 type="button"
