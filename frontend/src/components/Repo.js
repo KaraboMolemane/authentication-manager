@@ -227,17 +227,12 @@ function Repo() {
           password: element.data.password,
         };
 
-        console.log("element", element)
-
-        console.log("repo initial", repo)
-
+        console.log("element", element);
+        console.log("repo initial", repo);
 
         if (element.type === "update") {
-          // EDIT existing repo
-          // job.id = element.key ? element.key : editingModeID.current;
-          repo.repoKey = element.data.name;
-
-          console.log("repo update", repo)
+          repo.repoKey = element.key;
+          console.log("repo update", repo);
 
           fetch("/edit-dept-repo-credentials", {
             method: "PUT",

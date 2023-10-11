@@ -146,7 +146,6 @@ exports.addNewCredentialsToDeptRepo = async (req, res) => {
         },
         { arrayFilters: [{ "department.id": { $eq: deptId } }] }
       );
-      console.log("result", result);
       if (result.modifiedCount !== 0) {
         res.send({ msg: "The new entry has been added to the repo" });
       } else {
@@ -181,6 +180,19 @@ exports.editDeptRepoCredentials = async (req, res) => {
     const password = req.body.password;
     const token = req.headers["authorization"].split(" ")[1];
 
+    // Only change updated fields
+    const changes = {};
+    if(name !== undefined && name !== null) changes.name = name;
+    if(url !== undefined && url !== null) changes.url = url;
+    if(username !== undefined && username !== null) changes.username = username;
+    if(password !== undefined && password !== null) changes.password = password;
+
+    // console.log("orgUnitId", orgUnitId);
+    // console.log("deptId", deptId);
+    // console.log("repoKey", repoKey);
+    // console.log("changes pushed", changes);
+    
+
     // verify the JWT and user permissions
     const decoded = jwt.verify(token, "jwt-secret");
     if (
@@ -194,12 +206,7 @@ exports.editDeptRepoCredentials = async (req, res) => {
         },
         {
           $set: {
-            "departments.$[dept].repo.$[r]": {
-              name: name,
-              url: url,
-              username: username,
-              password: password,
-            },
+            "departments.$[dept].repo.$[r]": changes,
           },
         },
         {
@@ -210,7 +217,14 @@ exports.editDeptRepoCredentials = async (req, res) => {
         }
       );
       console.log("result", result);
-      res.send({ msg: "The repo has been edited" });
+      if (result.modifiedCount !== 0) {
+        res.send({ msg: "The repo has been edited" });
+      } else {
+        res.send({
+          msg: "Something went wrong while editing the entry to the repo",
+        });
+      }
+      
     } else {
       console.log("inside 403");
       res.status(403).send({
