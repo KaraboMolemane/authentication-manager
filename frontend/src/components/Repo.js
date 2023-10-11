@@ -1,4 +1,4 @@
-import { useEffect, useState, useRef } from "react";
+import { useEffect, useState, useRef, useCallback } from "react";
 import "../App.css";
 import DataGrid, {
   Column,
@@ -171,9 +171,29 @@ function Repo() {
     }
   }
 
-  function handleSavingUserRoles(e) {
-    console.log("handleSavingUserRoles:", e);
-  }
+  const handleSavingUserRoles = useCallback((e) => {
+    // console.log("handleSavingUserRoles:", e);
+    const changes = e.changes;
+    fetch("/edit-user-role", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + userToken.current,
+      },
+      body: JSON.stringify(changes),
+    })
+      .then((res) => res.json())
+      .then(
+        (result) => {
+          console.log(result.msg);
+        },
+        (error) => {
+          console.log(error.msg);
+        }
+      );
+
+    // https://stackoverflow.com/questions/56395941/how-do-i-send-an-array-with-fetch-javascript
+  }, []);
 
   return (
     <>

@@ -121,16 +121,21 @@ exports.editUserRole = async (req, res) => {
     const token = req.headers["authorization"].split(" ")[1];
     const decoded = jwt.verify(token, "jwt-secret");
     if (decoded.role === "admin") {
-      const filter = { _id: req.body.userId };
-      const update = { role: req.body.newRole };
-      // console.log("filter", filter)
-      // console.log("update", update)
-      const result = await User.findOneAndUpdate(filter, update, { new: true });
-      console.log("result", result);
+      // Get an array of changes from the body
+      const changes = req.body;
+      if (changes.length !== 0) {
+        changes.forEach(async (element) => {
+          const filter = { _id: element.key };
+          const update = { role: element.data.role };
+          const result = await User.findOneAndUpdate(filter, update, {
+            new: true,
+          });
+        });
+      }
       res.send({ msg: "The user role has been updated" });
     } else {
       res.status(403).send({
-        msg: "Your JWT was verified, but you do not have access to this resource. Please contact your admin to get access to this repo.",
+        msg: "Your JWT was verified, but you do not have access to this resource. Please contact your admin to get access to this resource.",
       });
     }
   } catch (error) {
