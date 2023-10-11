@@ -146,7 +146,14 @@ exports.addNewCredentialsToDeptRepo = async (req, res) => {
         },
         { arrayFilters: [{ "department.id": { $eq: deptId } }] }
       );
-      res.send({ msg: "The new entry has been added to the repo" });
+      console.log("result", result);
+      if (result.modifiedCount !== 0) {
+        res.send({ msg: "The new entry has been added to the repo" });
+      } else {
+        res.send({
+          msg: "Something went wrong while adding the new entry to the repo",
+        });
+      }
     } else {
       res.status(403).send({
         msg: "Your JWT was verified, but you do not have access to this resource. Please contact your admin to get access to this repo.",

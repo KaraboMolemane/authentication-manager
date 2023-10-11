@@ -62,11 +62,48 @@ function Repo() {
       );
   }, []);
 
+  // const handleOrgUnitSelection = useCallback((e, orgUnit) => {
+  //   setActiveOrgUnit(orgUnit);
+  //   setActiveDepartment({});
+  //   setActiveRepo([]);
+  // }, []);
+
   function handleOrgUnitSelection(orgUnit) {
     setActiveOrgUnit(orgUnit);
     setActiveDepartment({});
     setActiveRepo([]);
   }
+
+  // const  handleDepartmentSelection = useCallback((e, department) => {
+  //   setActiveDepartment(department);
+  //   //setActiveRepo(department[0].repo);
+  //   console.log("department", department);
+
+  //   fetch("/get-dept-repo-for-user", {
+  //     method: "POST",
+  //     headers: {
+  //       "Content-Type": "application/json",
+  //       Authorization: "Bearer " + userToken.current,
+  //     },
+  //     body: JSON.stringify({
+  //       ouId: activeOrgUnit.id,
+  //       deptId: department[0].id,
+  //     }),
+  //   })
+  //     //.then((res) => console.log('res', res))
+  //     .then((res) => res.json())
+  //     .then(
+  //       (res) => {
+  //         console.log("Resource res", res);
+  //         setIsLoaded(true);
+  //         setActiveRepo(res.repo);
+  //       },
+  //       (error) => {
+  //         setIsLoaded(true);
+  //         setError(error);
+  //       }
+  //     );
+  //   }, []);
 
   function handleDepartmentSelection(department) {
     setActiveDepartment(department);
@@ -99,7 +136,7 @@ function Repo() {
       );
   }
 
-  function getAllUsers(e) {
+  const getAllUsers = useCallback((e) => {
     fetch("/get-all-users")
       .then((res) => res.json())
       .then(
@@ -110,7 +147,7 @@ function Repo() {
           console.log(error.msg);
         }
       );
-  }
+  }, []);
 
   // let results = "Make selections above to view repo details.";
   // if (error) {
@@ -136,7 +173,7 @@ function Repo() {
           password: element.password,
         };
 
-        if (e.changes[0].type === "update") {
+        if (element.type === "update") {
           // EDIT existing repo
           // job.id = element.key ? element.key : editingModeID.current;
           repo.repoKey = element.name;
@@ -164,6 +201,80 @@ function Repo() {
           }).then(() => {
             console.log("Frontend - new repo credentials added");
           });
+        }
+
+        // window.location.href = "/";
+      });
+    }
+  }
+
+  // const handleEditSaveRepo = useCallback((e) => {
+  //   console.log("handleEditSaveRepo", e);
+
+  // }, []);
+
+  function handleEditSaveRepo(e) {
+    console.log("handleEditSaveRepo", e);
+    const repos = e.changes;
+    if (repos.length !== 0) {
+      repos.forEach((element, index) => {
+        const repo = {
+          ouId: activeOrgUnit.id,
+          deptId: activeDepartment[0].id,
+          name: element.data.name,
+          url: element.data.url,
+          username: element.data.username,
+          password: element.data.password,
+        };
+
+        console.log("element", element)
+
+        console.log("repo initial", repo)
+
+
+        if (element.type === "update") {
+          // EDIT existing repo
+          // job.id = element.key ? element.key : editingModeID.current;
+          repo.repoKey = element.data.name;
+
+          console.log("repo update", repo)
+
+          fetch("/edit-dept-repo-credentials", {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + userToken.current,
+            },
+            body: JSON.stringify(repo),
+          })
+            .then((res) => res.json())
+            .then(
+              (result) => {
+                console.log(result.msg);
+              },
+              (error) => {
+                console.log(error.msg);
+              }
+            );
+        } else {
+          // ADD new repo
+          fetch("/add-new-credentials-to-dept-repo", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: "Bearer " + userToken.current,
+            },
+            body: JSON.stringify(repo),
+          })
+            .then((res) => res.json())
+            .then(
+              (result) => {
+                console.log(result.msg);
+              },
+              (error) => {
+                console.log(error.msg);
+              }
+            );
         }
 
         // window.location.href = "/";
@@ -218,7 +329,7 @@ function Repo() {
         keyExpr="name"
         errorRowEnabled={false}
         showBorders={true}
-        onSaving={onSaving}
+        onSaving={handleEditSaveRepo}
       >
         <Paging defaultPageSize={10} />
         <HeaderFilter visible={true}>
@@ -247,31 +358,31 @@ function Repo() {
         <Column dataField="password" />
       </DataGrid>
       {/* Modal for editing user roles */}
-      <article class="my-3" id="modal">
+      <article className="my-3" id="modal">
         <div>
           <div
-            class="modal fade"
+            className="modal fade"
             id="staticBackdropLive"
             data-bs-backdrop="static"
             data-bs-keyboard="false"
-            tabindex="-1"
+            tabIndex="-1"
             aria-labelledby="staticBackdropLiveLabel"
             aria-hidden="true"
           >
-            <div class="modal-dialog">
-              <div class="modal-content">
-                <div class="modal-header">
-                  <h5 class="modal-title" id="staticBackdropLiveLabel">
+            <div className="modal-dialog">
+              <div className="modal-content">
+                <div className="modal-header">
+                  <h5 className="modal-title" id="staticBackdropLiveLabel">
                     Edit user roles
                   </h5>
                   <button
                     type="button"
-                    class="btn-close"
+                    className="btn-close"
                     data-bs-dismiss="modal"
                     aria-label="Close"
                   ></button>
                 </div>
-                <div class="modal-body">
+                <div className="modal-body">
                   <DataGrid
                     dataSource={allusers}
                     keyExpr="_id"
@@ -293,10 +404,10 @@ function Repo() {
                     </Column>
                   </DataGrid>
                 </div>
-                <div class="modal-footer">
+                <div className="modal-footer">
                   <button
                     type="button"
-                    class="btn btn-secondary"
+                    className="btn btn-secondary"
                     data-bs-dismiss="modal"
                   >
                     Close
