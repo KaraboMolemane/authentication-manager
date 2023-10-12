@@ -231,6 +231,7 @@ function Repo() {
         console.log("repo initial", repo);
 
         if (element.type === "update") {
+          // EDIT existing repo
           repo.repoKey = element.key;
           console.log("repo update", repo);
 

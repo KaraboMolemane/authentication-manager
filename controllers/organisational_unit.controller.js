@@ -164,7 +164,7 @@ exports.addNewCredentialsToDeptRepo = async (req, res) => {
     res.sendStatus(401);
   }
   // https://www.mongodb.com/docs/manual/reference/operator/update/push/
-  // https://www.mongodb.com/docs/drivers/node/current/fundamentals/crud/write-operations/embedded-arrays/#:~:text=To%20update%20the%20first%20array,use%20the%20filtered%20positional%20operator.
+  // https://www.mongodb.com/docs/drivers/node/current/fundamentals/crud/write-operations/embedded-arrays/
   // https://www.mongodb.com/community/forums/t/updating-nested-array-of-objects-within-am-array-of-objects/246979
 };
 
@@ -200,7 +200,7 @@ exports.editDeptRepoCredentials = async (req, res) => {
       (decoded.departments.includes(deptId) && decoded.role === "management")
     ) {
       console.log("inside if");
-      const result = await OrganisationalUnit.updateOne(
+      const result = await OrganisationalUnit.findOneAndUpdate(
         {
           id: orgUnitId,
         },
@@ -210,6 +210,7 @@ exports.editDeptRepoCredentials = async (req, res) => {
           },
         },
         {
+          new: true,
           arrayFilters: [
             { "dept.id": { $eq: deptId } },
             { "r.name": { $eq: repoKey } },
