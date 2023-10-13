@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 
 function OrgUnitsSelect({
     orgUnits,
-    handleOrgUnitSelection
+    handleOrgUnitSelection,
+    inModal
 }) {
   // const [error, setError] = useState(null);
   // const [isLoaded, setIsLoaded] = useState(false);
@@ -10,7 +11,7 @@ function OrgUnitsSelect({
 
   //const orgUnits = props.orgUnits;
   const orgUnitItems = orgUnits.map((orgUnit) => (
-    <li className="list-inline-item" key={orgUnit.id}>
+    <li className={inModal? "" : "list-inline-item"} key={orgUnit.id}>
       <input
         type="radio"
         name="radios"
@@ -25,7 +26,7 @@ function OrgUnitsSelect({
   ));
 
   return (
-    <ul className="list-inline">{orgUnitItems}</ul>
+    <ul className={inModal? "list-unstyled text-start" : "list-inline"}>{orgUnitItems}</ul>
   )
 }
 

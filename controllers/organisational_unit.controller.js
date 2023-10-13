@@ -168,7 +168,7 @@ exports.addNewCredentialsToDeptRepo = async (req, res) => {
   // https://www.mongodb.com/community/forums/t/updating-nested-array-of-objects-within-am-array-of-objects/246979
 };
 
-exports.editDeptRepoCredentials = async (req, res) => {
+exports.editDeptRepoCredentials2 = async (req, res) => {
   try {
     console.log("in function");
     const orgUnitId = req.body.ouId;
@@ -237,4 +237,48 @@ exports.editDeptRepoCredentials = async (req, res) => {
     console.log("error", error);
     res.sendStatus(401);
   }
+};
+
+exports.editDeptRepoCredentials = async (req, res) => {
+  try {
+    const token = req.headers["authorization"].split(" ")[1];
+    const decoded = jwt.verify(token, "jwt-secret");
+    if (decoded.role === "admin") {
+      // Get an array of changes from the body
+      const changes = req.body;
+      console.log("changes", req.body)
+      if (changes.length !== 0) {
+        changes.forEach(async (element, index) => {
+          const repo = {
+            ouId: element.id,
+            deptId: element.id,
+            name: element.data.name,
+            url: element.data.url,
+            username: element.data.username,
+            password: element.data.password,
+          };
+          const repoKey = element.key;
+
+          const filter = { _id: element.key };
+          const update = { role: element.data.role };
+          const result = await OrganisationalUnit.findOneAndUpdate(filter, update, {
+            new: true, 
+            arrayFilters: [
+              { "dept.id": { $eq: repo.deptId } },
+              { "r.name": { $eq: repoKey } },
+            ],
+          });
+        });
+      }
+      res.send({ msg: "The user role has been updated" });
+    } else {
+      res.status(403).send({
+        msg: "Your JWT was verified, but you do not have access to this resource. Please contact your admin to get access to this resource.",
+      });
+    }
+  } catch (error) {
+    console.log("error", error);
+    res.sendStatus(401);
+  }
+  // https://mongoosejs.com/docs/tutorials/findoneandupdate.html
 };

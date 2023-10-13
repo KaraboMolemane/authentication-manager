@@ -15,6 +15,7 @@ import { Item } from "devextreme-react/form";
 import Header from "./Header.js";
 import OrgUnitsSelect from "./OrgUnitsSelect.js";
 import DepartmentSelectBox from "./DepartmentSelectBox.js";
+import UserSelectBox from "./UserSelectBox";
 
 function Repo() {
   //Declare states
@@ -25,7 +26,8 @@ function Repo() {
   const [activeOrgUnit, setActiveOrgUnit] = useState({});
   const [activeDepartment, setActiveDepartment] = useState({});
   const [activeRepo, setActiveRepo] = useState([]);
-  const [allusers, setAllUsers] = useState([]);
+  const [activeUser, setActiveUser] = useState([]);
+  const [allUsers, setAllUsers] = useState([]);
 
   const cookies = document.cookie;
   const indexToken = cookies.indexOf("token=") + 6;
@@ -136,6 +138,37 @@ function Repo() {
       );
   }
 
+  function handleUserSelection(user) {
+    setActiveDepartment(user);
+    //setActiveRepo(department[0].repo);
+    console.log("user", user);
+
+    // fetch("/get-dept-repo-for-user", {
+    //   method: "POST",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //     Authorization: "Bearer " + userToken.current,
+    //   },
+    //   body: JSON.stringify({
+    //     ouId: activeOrgUnit.id,
+    //     deptId: department[0].id,
+    //   }),
+    // })
+    //   //.then((res) => console.log('res', res))
+    //   .then((res) => res.json())
+    //   .then(
+    //     (res) => {
+    //       console.log("Resource res", res);
+    //       setIsLoaded(true);
+    //       setActiveRepo(res.repo);
+    //     },
+    //     (error) => {
+    //       setIsLoaded(true);
+    //       setError(error);
+    //     }
+    //   );
+  }
+
   const getAllUsers = useCallback((e) => {
     fetch("/get-all-users")
       .then((res) => res.json())
@@ -158,54 +191,29 @@ function Repo() {
   //   results = "Repo details:";
   // }
 
-  function onSaving(e) {
-    console.log("e:", e);
-
-    const repos = e.changes;
-    if (repos.length !== 0) {
-      repos.array.forEach((element, index) => {
-        const repo = {
-          ouId: activeOrgUnit.id,
-          deptId: activeDepartment.id,
-          name: element.name,
-          url: element.url,
-          username: element.username,
-          password: element.password,
-        };
-
-        if (element.type === "update") {
-          // EDIT existing repo
-          // job.id = element.key ? element.key : editingModeID.current;
-          repo.repoKey = element.name;
-
-          fetch("/edit-dept-repo-credentials", {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: "Bearer " + userToken.current,
-            },
-            body: JSON.stringify(repo),
-          }).then(() => {
-            console.log("Frontend - repo  credentials edited");
-            // editingModeID.current = 0; //Reset editingMode,
-          });
-        } else {
-          // ADD new repo
-          fetch("/add-new-credentials-to-dept-repo", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: "Bearer " + userToken.current,
-            },
-            body: JSON.stringify(repo),
-          }).then(() => {
-            console.log("Frontend - new repo credentials added");
-          });
+  function handleSavingRepo(e) {
+    const changes = e.changes;
+    changes.ouId = activeOrgUnit.id;
+    changes.deptId = activeDepartment[0].id;
+    fetch("/edit-dept-repo-credentials", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + userToken.current,
+      },
+      body: JSON.stringify(changes),
+    })
+      .then((res) => res.json())
+      .then(
+        (result) => {
+          console.log(result.msg);
+        },
+        (error) => {
+          console.log(error.msg);
         }
+      );
 
-        // window.location.href = "/";
-      });
-    }
+    // https://stackoverflow.com/questions/56395941/how-do-i-send-an-array-with-fetch-javascript
   }
 
   // const handleEditSaveRepo = useCallback((e) => {
@@ -325,7 +333,7 @@ function Repo() {
         keyExpr="name"
         errorRowEnabled={false}
         showBorders={true}
-        onSaving={handleEditSaveRepo}
+        onSaving={handleSavingRepo}
       >
         <Paging defaultPageSize={10} />
         <HeaderFilter visible={true}>
@@ -354,66 +362,108 @@ function Repo() {
         <Column dataField="password" />
       </DataGrid>
       {/* Modal for editing user roles */}
-      <article className="my-3" id="modal">
-        <div>
-          <div
-            className="modal fade"
-            id="staticBackdropLive"
-            data-bs-backdrop="static"
-            data-bs-keyboard="false"
-            tabIndex="-1"
-            aria-labelledby="staticBackdropLiveLabel"
-            aria-hidden="true"
-          >
-            <div className="modal-dialog">
-              <div className="modal-content">
-                <div className="modal-header">
-                  <h5 className="modal-title" id="staticBackdropLiveLabel">
-                    Edit user roles
-                  </h5>
-                  <button
-                    type="button"
-                    className="btn-close"
-                    data-bs-dismiss="modal"
-                    aria-label="Close"
-                  ></button>
-                </div>
-                <div className="modal-body">
-                  <DataGrid
-                    dataSource={allusers}
-                    keyExpr="_id"
-                    showBorders={true}
-                    onSaving={handleSavingUserRoles}
-                  >
-                    <Paging defaultPageSize={10} />
-                    <Editing mode="batch" allowUpdating={true} />
-                    <Column dataField="_id" caption="Id" />
-                    <Column dataField="firstname" />
-                    <Column dataField="lastname" />
-                    <Column dataField="username" />
-                    <Column dataField="role">
-                      <Lookup
-                        dataSource={roles}
-                        displayExpr="Name"
-                        valueExpr="ID"
-                      />
-                    </Column>
-                  </DataGrid>
-                </div>
-                <div className="modal-footer">
-                  <button
-                    type="button"
-                    className="btn btn-secondary"
-                    data-bs-dismiss="modal"
-                  >
-                    Close
-                  </button>
-                </div>
+      <div>
+        <div
+          className="modal fade"
+          id="staticBackdropLive"
+          data-bs-backdrop="static"
+          data-bs-keyboard="false"
+          tabIndex="-1"
+          aria-labelledby="staticBackdropLiveLabel"
+          aria-hidden="true"
+        >
+          <div className="modal-dialog">
+            <div className="modal-content">
+              <div className="modal-header">
+                <h5 className="modal-title" id="staticBackdropLiveLabel">
+                  Edit user roles
+                </h5>
+                <button
+                  type="button"
+                  className="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"
+                ></button>
+              </div>
+              <div className="modal-body">
+                <DataGrid
+                  dataSource={allUsers}
+                  keyExpr="_id"
+                  showBorders={true}
+                  onSaving={handleSavingUserRoles}
+                >
+                  <Paging defaultPageSize={10} />
+                  <Editing mode="batch" allowUpdating={true} />
+                  <Column dataField="_id" caption="Id" />
+                  <Column dataField="firstname" />
+                  <Column dataField="lastname" />
+                  <Column dataField="username" />
+                  <Column dataField="role">
+                    <Lookup
+                      dataSource={roles}
+                      displayExpr="Name"
+                      valueExpr="ID"
+                    />
+                  </Column>
+                </DataGrid>
+              </div>
+              <div className="modal-footer">
+                <button
+                  type="button"
+                  className="btn btn-secondary"
+                  data-bs-dismiss="modal"
+                >
+                  Close
+                </button>
               </div>
             </div>
           </div>
         </div>
-      </article>
+      </div>
+      {/* Modal for reassigning users */}
+      <div
+        className="modal fade"
+        id="staticBackdropLive2"
+        data-bs-backdrop="static"
+        data-bs-keyboard="false"
+        tabindex="-1"
+        aria-labelledby="staticBackdropLiveLabel2"
+        aria-hidden="true"
+      >
+        <div className="modal-dialog">
+          <div className="modal-content">
+            <div className="modal-header">
+              <h5 className="modal-title" id="staticBackdropLiveLabel2">
+                Reassign user positions
+              </h5>
+              <button
+                type="button"
+                className="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"
+              ></button>
+            </div>
+            <div className="modal-body">
+              <h6>Make the relevant selections below to assign user to organisational unit/department</h6>
+              <UserSelectBox allUsers={allUsers} handleUserSelection={handleUserSelection} /> <br></br>
+              <OrgUnitsSelect
+                orgUnits={orgUnits}
+                handleOrgUnitSelection={handleOrgUnitSelection}
+                inModal={true}
+              />
+            </div>
+            <div className="modal-footer">
+              <button
+                type="button"
+                className="btn btn-secondary"
+                data-bs-dismiss="modal"
+              >
+                Close
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
     </>
   );
 }

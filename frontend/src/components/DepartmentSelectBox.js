@@ -22,7 +22,7 @@ function DepartmentSelectBox({
       (department) => department.id === e.value
     );
     handleDepartmentSelection(department);
-  }, [departments]);
+  }, [departments, handleDepartmentSelection]);
 
   useEffect(() => {
 
