@@ -282,3 +282,45 @@ exports.editDeptRepoCredentials = async (req, res) => {
   }
   // https://mongoosejs.com/docs/tutorials/findoneandupdate.html
 };
+
+exports.editUserPositionsInOrg = async (req, res) => {
+  try {
+    const token = req.headers["authorization"].split(" ")[1];
+    const decoded = jwt.verify(token, "jwt-secret");
+    if (decoded.role === "admin") {
+      // Get an array of changes from the body
+      const changes = req.body;
+      console.log("changes", req.body)
+      if (changes.length !== 0) {
+        changes.forEach(async (element, index) => {
+          const repo = {
+            ouId: element.ouId,
+            deptId: element.deptId,
+            userId: element.userId,
+            isEmployed: element.data.isEmployed,
+          };
+          const repoKey = element.key;
+
+          const filter = { _id: element.key };
+          const update = { role: element.data.role };
+          const result = await OrganisationalUnit.findOneAndUpdate(filter, update, {
+            new: true, 
+            arrayFilters: [
+              { "dept.id": { $eq: repo.deptId } },
+              { "r.name": { $eq: repoKey } },
+            ],
+          });
+        });
+      }
+      res.send({ msg: "The user role has been updated" });
+    } else {
+      res.status(403).send({
+        msg: "Your JWT was verified, but you do not have access to this resource. Please contact your admin to get access to this resource.",
+      });
+    }
+  } catch (error) {
+    console.log("error", error);
+    res.sendStatus(401);
+  }
+  // https://mongoosejs.com/docs/tutorials/findoneandupdate.html
+};

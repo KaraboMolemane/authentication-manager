@@ -144,3 +144,56 @@ exports.editUserRole = async (req, res) => {
   }
   // https://mongoosejs.com/docs/tutorials/findoneandupdate.html
 };
+
+exports.editUserPositions = async (req, res) => {
+  try {
+    const token = req.headers["authorization"].split(" ")[1];
+    const decoded = jwt.verify(token, "jwt-secret");
+    if (decoded.role === "admin") {
+      // Get an array of changes from the body
+      const changes = req.body;
+      let result = null;
+      console.log("changes", req.body);
+      if (changes.length !== 0) {
+        changes.forEach(async (element, index) => {
+          if (element.isEmployed == true) {
+            // Add element to array
+            //  https://www.mongodb.com/docs/manual/reference/operator/update/push/
+            result = await User.updateOne(
+              {
+                _id: element.userId,
+              },
+              {
+                $push: {
+                  "positions.$[].departments_ids": element.deptId,
+                },
+              }
+            );
+          } else {
+            // Remove element from array
+            // https://www.mongodb.com/docs/manual/reference/operator/update/pull/#remove-items-from-an-array-of-documents
+            result = await User.updateOne(
+              {
+                _id: element.userId,
+              },
+              {
+                $pull: {
+                  "positions.$[].departments_ids": element.deptId,
+                },
+              }
+            );
+          }
+        });
+      }
+      res.send({ msg: "User positions has been updated" });
+    } else {
+      res.status(403).send({
+        msg: "Your JWT was verified, but you do not have access to this resource. Please contact your admin to get access to this resource.",
+      });
+    }
+  } catch (error) {
+    console.log("error", error);
+    res.sendStatus(401);
+  }
+  // https://mongoosejs.com/docs/tutorials/findoneandupdate.html
+};

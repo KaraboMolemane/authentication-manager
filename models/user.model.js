@@ -28,18 +28,13 @@ const UserSchema = mongoose.Schema({
     required: false,
     default: "normal",
   },
-  positions: {
-    type: Array,
-    required: false,
-    default:[
-        {
-            OU_ids: [], 
-            departments_ids: []
-        }
-    ]
-  },
+  positions: [
+    {
+      OU_ids: [],
+      departments_ids: [],
+    },
+  ],
 });
-
 
 // Create Model
 const UserModel = mongoose.model("users", UserSchema);

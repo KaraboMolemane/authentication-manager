@@ -182,8 +182,10 @@ function Repo() {
       const userId = "ObjectId('" + activeUser._id + "')";
       const isEmployed = element.employees.includes(userId) ? true : false;
       const obj = {
-        id: element.id,
-        name: element.name,
+        ouId: activeOrgUnit.id,
+        deptId: element.id,
+        deptName: element.name,
+        userId: activeUser.id,
         isEmployed: isEmployed,
       };
       userPositionsArr.push(obj);
@@ -244,9 +246,6 @@ function Repo() {
           username: element.data.username,
           password: element.data.password,
         };
-
-        console.log("element", element);
-        console.log("repo initial", repo);
 
         if (element.type === "update") {
           // EDIT existing repo
@@ -321,25 +320,25 @@ function Repo() {
   }, []);
 
   const handleSavingUserPositions = useCallback((e) => {
-    // console.log("handleSavingUserRoles:", e);
+    console.log("handleSavingUserRoles:", e);
     const changes = e.changes;
-    fetch("/edit-user-role", {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + userToken.current,
-      },
-      body: JSON.stringify(changes),
-    })
-      .then((res) => res.json())
-      .then(
-        (result) => {
-          console.log(result.msg);
-        },
-        (error) => {
-          console.log(error.msg);
-        }
-      );
+    // fetch("/edit-user-role", {
+    //   method: "PUT",
+    //   headers: {
+    //     "Content-Type": "application/json",
+    //     Authorization: "Bearer " + userToken.current,
+    //   },
+    //   body: JSON.stringify(changes),
+    // })
+    //   .then((res) => res.json())
+    //   .then(
+    //     (result) => {
+    //       console.log(result.msg);
+    //     },
+    //     (error) => {
+    //       console.log(error.msg);
+    //     }
+    //   );
 
     // https://stackoverflow.com/questions/56395941/how-do-i-send-an-array-with-fetch-javascript
   }, []);
@@ -494,15 +493,15 @@ function Repo() {
               />
               <DataGrid
                 dataSource={userPositions}
-                keyExpr="id"
+                keyExpr="deptId"
                 showBorders={true}
                 errorRowEnabled={false}
                 onSaving={handleSavingUserPositions}
               >
                 <Paging defaultPageSize={10} />
                 <Editing mode="batch" allowUpdating={true} />
-                <Column dataField="id" caption="Id" width={100} />
-                <Column dataField="name" caption="department" />
+                <Column dataField="deptId" caption="deptId" width={100} />
+                <Column dataField="deptName" caption="department" />
                 <Column dataField="isEmployed">
                   <Lookup
                     dataSource={isEmployed}
