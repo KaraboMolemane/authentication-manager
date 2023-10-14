@@ -11,23 +11,19 @@ function UserSelectBox({
 }) {
 
   const onValueChanged = useCallback((e) => {
-    console.log("UserSelectBox e", e);
 
     const user = allUsers.filter(
       (user) => {
-        console.log("UserSelectBox user.id", user.id);
-        console.log("UserSelectBox e.value", e.value);
-        return user.id === e.value
+        return user._id === e.value
       }
     );
-    console.log("UserSelectBox user", user);
     handleUserSelection(user);
   }, [allUsers, handleUserSelection ]);
 
   return (
     <SelectBox
       dataSource={allUsers}
-      valueExpr="id"
+      valueExpr="_id"
       displayExpr="username"
       onValueChanged={onValueChanged}
       label="User"

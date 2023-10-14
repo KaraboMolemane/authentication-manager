@@ -21,13 +21,13 @@ function Repo() {
   //Declare states
   const [error, setError] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
-  // const [token, setToken] = useState("");
   const [orgUnits, setOrgUnits] = useState([]);
   const [activeOrgUnit, setActiveOrgUnit] = useState({});
   const [activeDepartment, setActiveDepartment] = useState({});
   const [activeRepo, setActiveRepo] = useState([]);
-  const [activeUser, setActiveUser] = useState([]);
+  const [activeUser, setActiveUser] = useState({});
   const [allUsers, setAllUsers] = useState([]);
+  const [userPositions, setUserPositions] = useState([{}]);
 
   const cookies = document.cookie;
   const indexToken = cookies.indexOf("token=") + 6;
@@ -47,6 +47,17 @@ function Repo() {
       Name: "admin",
     },
   ];
+
+  const isEmployed = [
+    {
+      ID: "true",
+      Name: "true",
+    },
+    {
+      ID: "false",
+      Name: "false",
+    },
+  ]
 
   useEffect(() => {
     // Get all Organisational Units
@@ -74,6 +85,13 @@ function Repo() {
     setActiveOrgUnit(orgUnit);
     setActiveDepartment({});
     setActiveRepo([]);
+
+    if (
+      Object.keys(activeOrgUnit).length !== 0 &&
+      Object.keys(activeUser).length !== 0
+    ) {
+      getuserPositions();
+    }
   }
 
   // const  handleDepartmentSelection = useCallback((e, department) => {
@@ -139,34 +157,7 @@ function Repo() {
   }
 
   function handleUserSelection(user) {
-    setActiveDepartment(user);
-    //setActiveRepo(department[0].repo);
-    console.log("user", user);
-
-    // fetch("/get-dept-repo-for-user", {
-    //   method: "POST",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //     Authorization: "Bearer " + userToken.current,
-    //   },
-    //   body: JSON.stringify({
-    //     ouId: activeOrgUnit.id,
-    //     deptId: department[0].id,
-    //   }),
-    // })
-    //   //.then((res) => console.log('res', res))
-    //   .then((res) => res.json())
-    //   .then(
-    //     (res) => {
-    //       console.log("Resource res", res);
-    //       setIsLoaded(true);
-    //       setActiveRepo(res.repo);
-    //     },
-    //     (error) => {
-    //       setIsLoaded(true);
-    //       setError(error);
-    //     }
-    //   );
+    setActiveUser(user[0]);
   }
 
   const getAllUsers = useCallback((e) => {
@@ -181,6 +172,25 @@ function Repo() {
         }
       );
   }, []);
+
+  function getuserPositions() {
+    // console.log("activeOrgUnit getuserPositions", activeOrgUnit);
+    // console.log("activeUser getuserPositions", activeUser);
+    const userPositionsArr = [];
+
+    activeOrgUnit.departments.forEach((element) => {
+      const userId = "ObjectId('" + activeUser._id + "')";
+      const isEmployed = element.employees.includes(userId) ? true : false;
+      const obj = {
+        id: element.id,
+        name: element.name,
+        isEmployed: isEmployed,
+      };
+      userPositionsArr.push(obj);
+    });
+    // console.log("userPositionsArr", userPositionsArr);
+    setUserPositions(userPositionsArr);
+  }
 
   // let results = "Make selections above to view repo details.";
   // if (error) {
@@ -287,6 +297,30 @@ function Repo() {
   }
 
   const handleSavingUserRoles = useCallback((e) => {
+    // console.log("handleSavingUserRoles:", e);
+    const changes = e.changes;
+    fetch("/edit-user-role", {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + userToken.current,
+      },
+      body: JSON.stringify(changes),
+    })
+      .then((res) => res.json())
+      .then(
+        (result) => {
+          console.log(result.msg);
+        },
+        (error) => {
+          console.log(error.msg);
+        }
+      );
+
+    // https://stackoverflow.com/questions/56395941/how-do-i-send-an-array-with-fetch-javascript
+  }, []);
+
+  const handleSavingUserPositions = useCallback((e) => {
     // console.log("handleSavingUserRoles:", e);
     const changes = e.changes;
     fetch("/edit-user-role", {
@@ -426,7 +460,7 @@ function Repo() {
         id="staticBackdropLive2"
         data-bs-backdrop="static"
         data-bs-keyboard="false"
-        tabindex="-1"
+        tabIndex="-1"
         aria-labelledby="staticBackdropLiveLabel2"
         aria-hidden="true"
       >
@@ -444,13 +478,39 @@ function Repo() {
               ></button>
             </div>
             <div className="modal-body">
-              <h6>Make the relevant selections below to assign user to organisational unit/department</h6>
-              <UserSelectBox allUsers={allUsers} handleUserSelection={handleUserSelection} /> <br></br>
+              <h6>
+                Make the relevant selections below to assign user to
+                organisational unit/department
+              </h6>
+              <UserSelectBox
+                allUsers={allUsers}
+                handleUserSelection={handleUserSelection}
+              />{" "}
+              <br></br>
               <OrgUnitsSelect
                 orgUnits={orgUnits}
                 handleOrgUnitSelection={handleOrgUnitSelection}
                 inModal={true}
               />
+              <DataGrid
+                dataSource={userPositions}
+                keyExpr="id"
+                showBorders={true}
+                errorRowEnabled={false}
+                onSaving={handleSavingUserPositions}
+              >
+                <Paging defaultPageSize={10} />
+                <Editing mode="batch" allowUpdating={true} />
+                <Column dataField="id" caption="Id" width={100} />
+                <Column dataField="name" caption="department" />
+                <Column dataField="isEmployed">
+                  <Lookup
+                    dataSource={isEmployed}
+                    displayExpr="Name"
+                    valueExpr="ID"
+                  />
+                </Column>
+              </DataGrid>
             </div>
             <div className="modal-footer">
               <button

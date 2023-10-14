@@ -18,6 +18,7 @@ function DepartmentSelectBox({
 
 
   const onValueChanged = useCallback((e) => {
+    console.log("DepartmentSelectBox e", e);
     const department = departments.filter(
       (department) => department.id === e.value
     );
@@ -35,7 +36,7 @@ function DepartmentSelectBox({
     })
       .then((res) => res.json())
       .then((res) => {
-        console.log("res", res);
+        // console.log("res", res);
         setDepartments(res);
       });
 
