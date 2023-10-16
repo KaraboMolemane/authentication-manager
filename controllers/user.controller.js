@@ -153,7 +153,6 @@ exports.editUserPositions = async (req, res) => {
       // Get an array of changes from the body
       const changes = req.body;
       let result = null;
-      console.log("changes", req.body);
       if (changes.length !== 0) {
         changes.forEach(async (element, index) => {
           if (element.isEmployed == true) {

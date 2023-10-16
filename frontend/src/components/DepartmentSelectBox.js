@@ -18,7 +18,7 @@ function DepartmentSelectBox({
 
 
   const onValueChanged = useCallback((e) => {
-    console.log("DepartmentSelectBox e", e);
+    // console.log("DepartmentSelectBox e", e);
     const department = departments.filter(
       (department) => department.id === e.value
     );

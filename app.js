@@ -63,5 +63,6 @@ app.post("/get-org-unit-repos-by-ids", orgUnitsController.getOUDeptReposByIds);
 app.post("/get-dept-repo-for-user", orgUnitsController.getDeptRepoForUser)
 app.post("/add-new-credentials-to-dept-repo", orgUnitsController.addNewCredentialsToDeptRepo);
 app.put("/edit-dept-repo-credentials", orgUnitsController.editDeptRepoCredentials);
+app.put("/edit-dept-employees", orgUnitsController.editDeptEmployees);
 
 

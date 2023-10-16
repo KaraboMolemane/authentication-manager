@@ -22,6 +22,7 @@ function Repo() {
   const [error, setError] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [orgUnits, setOrgUnits] = useState([]);
+  const [orgUnitReassing, setOrgUnitReassign] = useState({});
   const [activeOrgUnit, setActiveOrgUnit] = useState({});
   const [activeDepartment, setActiveDepartment] = useState({});
   const [activeRepo, setActiveRepo] = useState([]);
@@ -57,7 +58,7 @@ function Repo() {
       ID: "false",
       Name: "false",
     },
-  ]
+  ];
 
   useEffect(() => {
     // Get all Organisational Units
@@ -75,6 +76,30 @@ function Repo() {
       );
   }, []);
 
+  useEffect(() => {
+    // Get user positions
+    const userPositionsArr = [];
+    if (
+      Object.keys(orgUnitReassing).length > 0 &&
+      orgUnitReassing.departments.length !== 0
+    ) {
+      orgUnitReassing.departments.forEach((element) => {
+        const userId = "ObjectId('" + activeUser._id + "')";
+        const isEmployed = element.employees.includes(userId) ? true : false;
+        const obj = {
+          ouId: orgUnitReassing.id,
+          deptId: element.id,
+          deptName: element.name,
+          userId: activeUser.id,
+          isEmployed: isEmployed,
+        };
+        userPositionsArr.push(obj);
+      });
+      // console.log("userPositionsArr", userPositionsArr);
+      setUserPositions(userPositionsArr);
+    }
+  }, [orgUnitReassing, activeUser]);
+
   // const handleOrgUnitSelection = useCallback((e, orgUnit) => {
   //   setActiveOrgUnit(orgUnit);
   //   setActiveDepartment({});
@@ -85,13 +110,27 @@ function Repo() {
     setActiveOrgUnit(orgUnit);
     setActiveDepartment({});
     setActiveRepo([]);
+  }
 
-    if (
-      Object.keys(activeOrgUnit).length !== 0 &&
-      Object.keys(activeUser).length !== 0
-    ) {
-      getuserPositions();
-    }
+  function handleOrgUnitReassignSelection(orgUnit) {
+    setOrgUnitReassign(orgUnit);
+    console.log(
+      " Object.keys(activeOrgUnit).length ORG",
+      Object.keys(activeOrgUnit).length
+    );
+    console.log(
+      "Object.keys(activeUser).length ORG",
+      Object.keys(activeUser).length
+    );
+
+    // if (
+    //   Object.keys(activeOrgUnit).length !== 0 &&
+    //   Object.keys(activeUser).length !== 0
+    // ) {
+    //   getuserPositions();
+    // }
+
+    // getuserPositions();
   }
 
   // const  handleDepartmentSelection = useCallback((e, department) => {
@@ -157,7 +196,22 @@ function Repo() {
   }
 
   function handleUserSelection(user) {
+    console.log(
+      " Object.keys(activeOrgUnit).length USER",
+      Object.keys(activeOrgUnit).length
+    );
+    console.log(
+      "Object.keys(activeUser).length USER",
+      Object.keys(activeUser).length
+    );
     setActiveUser(user[0]);
+    // if (
+    //   Object.keys(activeOrgUnit).length !== 0 &&
+    //   Object.keys(activeUser).length !== 0
+    // ) {
+    //   getuserPositions();
+    // }
+    // getuserPositions();
   }
 
   const getAllUsers = useCallback((e) => {
@@ -172,27 +226,6 @@ function Repo() {
         }
       );
   }, []);
-
-  function getuserPositions() {
-    // console.log("activeOrgUnit getuserPositions", activeOrgUnit);
-    // console.log("activeUser getuserPositions", activeUser);
-    const userPositionsArr = [];
-
-    activeOrgUnit.departments.forEach((element) => {
-      const userId = "ObjectId('" + activeUser._id + "')";
-      const isEmployed = element.employees.includes(userId) ? true : false;
-      const obj = {
-        ouId: activeOrgUnit.id,
-        deptId: element.id,
-        deptName: element.name,
-        userId: activeUser.id,
-        isEmployed: isEmployed,
-      };
-      userPositionsArr.push(obj);
-    });
-    // console.log("userPositionsArr", userPositionsArr);
-    setUserPositions(userPositionsArr);
-  }
 
   // let results = "Make selections above to view repo details.";
   // if (error) {
@@ -488,7 +521,7 @@ function Repo() {
               <br></br>
               <OrgUnitsSelect
                 orgUnits={orgUnits}
-                handleOrgUnitSelection={handleOrgUnitSelection}
+                handleOrgUnitSelection={handleOrgUnitReassignSelection}
                 inModal={true}
               />
               <DataGrid

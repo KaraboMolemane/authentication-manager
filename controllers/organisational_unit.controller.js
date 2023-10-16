@@ -168,77 +168,6 @@ exports.addNewCredentialsToDeptRepo = async (req, res) => {
   // https://www.mongodb.com/community/forums/t/updating-nested-array-of-objects-within-am-array-of-objects/246979
 };
 
-exports.editDeptRepoCredentials2 = async (req, res) => {
-  try {
-    console.log("in function");
-    const orgUnitId = req.body.ouId;
-    const deptId = req.body.deptId;
-    const repoKey = req.body.repoKey;
-    const name = req.body.name;
-    const url = req.body.url;
-    const username = req.body.username;
-    const password = req.body.password;
-    const token = req.headers["authorization"].split(" ")[1];
-
-    // Only change updated fields
-    const changes = {};
-    if(name !== undefined && name !== null) changes.name = name;
-    if(url !== undefined && url !== null) changes.url = url;
-    if(username !== undefined && username !== null) changes.username = username;
-    if(password !== undefined && password !== null) changes.password = password;
-
-    // console.log("orgUnitId", orgUnitId);
-    // console.log("deptId", deptId);
-    // console.log("repoKey", repoKey);
-    // console.log("changes pushed", changes);
-    
-
-    // verify the JWT and user permissions
-    const decoded = jwt.verify(token, "jwt-secret");
-    if (
-      decoded.role === "admin" ||
-      (decoded.departments.includes(deptId) && decoded.role === "management")
-    ) {
-      console.log("inside if");
-      const result = await OrganisationalUnit.findOneAndUpdate(
-        {
-          id: orgUnitId,
-        },
-        {
-          $set: {
-            "departments.$[dept].repo.$[r]": changes,
-          },
-        },
-        {
-          new: true,
-          arrayFilters: [
-            { "dept.id": { $eq: deptId } },
-            { "r.name": { $eq: repoKey } },
-          ],
-        }
-      );
-      console.log("result", result);
-      if (result.modifiedCount !== 0) {
-        res.send({ msg: "The repo has been edited" });
-      } else {
-        res.send({
-          msg: "Something went wrong while editing the entry to the repo",
-        });
-      }
-      
-    } else {
-      console.log("inside 403");
-      res.status(403).send({
-        msg: "Your JWT was verified, but you do not have access to this resource. Please contact your admin to get access to this repo.",
-      });
-    }
-  } catch (error) {
-    console.log("inside 401");
-    console.log("error", error);
-    res.sendStatus(401);
-  }
-};
-
 exports.editDeptRepoCredentials = async (req, res) => {
   try {
     const token = req.headers["authorization"].split(" ")[1];
@@ -246,7 +175,7 @@ exports.editDeptRepoCredentials = async (req, res) => {
     if (decoded.role === "admin") {
       // Get an array of changes from the body
       const changes = req.body;
-      console.log("changes", req.body)
+      console.log("changes", req.body);
       if (changes.length !== 0) {
         changes.forEach(async (element, index) => {
           const repo = {
@@ -261,13 +190,17 @@ exports.editDeptRepoCredentials = async (req, res) => {
 
           const filter = { _id: element.key };
           const update = { role: element.data.role };
-          const result = await OrganisationalUnit.findOneAndUpdate(filter, update, {
-            new: true, 
-            arrayFilters: [
-              { "dept.id": { $eq: repo.deptId } },
-              { "r.name": { $eq: repoKey } },
-            ],
-          });
+          const result = await OrganisationalUnit.findOneAndUpdate(
+            filter,
+            update,
+            {
+              new: true,
+              arrayFilters: [
+                { "dept.id": { $eq: repo.deptId } },
+                { "r.name": { $eq: repoKey } },
+              ],
+            }
+          );
         });
       }
       res.send({ msg: "The user role has been updated" });
@@ -283,36 +216,53 @@ exports.editDeptRepoCredentials = async (req, res) => {
   // https://mongoosejs.com/docs/tutorials/findoneandupdate.html
 };
 
-exports.editUserPositionsInOrg = async (req, res) => {
+exports.editDeptEmployees = async (req, res) => {
   try {
     const token = req.headers["authorization"].split(" ")[1];
     const decoded = jwt.verify(token, "jwt-secret");
     if (decoded.role === "admin") {
       // Get an array of changes from the body
       const changes = req.body;
-      console.log("changes", req.body)
+      let result = null;
+
       if (changes.length !== 0) {
         changes.forEach(async (element, index) => {
-          const repo = {
-            ouId: element.ouId,
-            deptId: element.deptId,
-            userId: element.userId,
-            isEmployed: element.data.isEmployed,
-          };
-          const repoKey = element.key;
-
-          const filter = { _id: element.key };
-          const update = { role: element.data.role };
-          const result = await OrganisationalUnit.findOneAndUpdate(filter, update, {
-            new: true, 
-            arrayFilters: [
-              { "dept.id": { $eq: repo.deptId } },
-              { "r.name": { $eq: repoKey } },
-            ],
-          });
+          const userObjId = "ObjectId('" + element.userId + "')";
+          if (element.isEmployed == true) {
+            // Add element to array
+            //  https://www.mongodb.com/docs/manual/reference/operator/update/push/
+            console.log("element", element);
+            result = await OrganisationalUnit.updateOne(
+              {
+                id: element.ouId,
+              },
+              {
+                $push: {
+                  "departments.$[department].employees": userObjId,
+                },
+              },
+              { arrayFilters: [{ "department.id": { $eq: element.deptId } }] }
+            );
+            console.log("result", result);
+          } else {
+            // Remove element from array
+            // https://www.mongodb.com/docs/manual/reference/operator/update/pull/#remove-items-from-an-array-of-documents
+            const result = await OrganisationalUnit.updateOne(
+              {
+                id: element.ouId,
+              },
+              {
+                $pull: {
+                  "departments.$[department].employees": userObjId,
+                },
+              },
+              { arrayFilters: [{ "department.id": { $eq: element.deptId } }] }
+            );
+            console.log("result", result);
+          }
         });
       }
-      res.send({ msg: "The user role has been updated" });
+      res.send({ msg: "The user has been added to department employees." });
     } else {
       res.status(403).send({
         msg: "Your JWT was verified, but you do not have access to this resource. Please contact your admin to get access to this resource.",
