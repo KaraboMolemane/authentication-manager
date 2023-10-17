@@ -22,7 +22,7 @@ function Repo() {
   const [error, setError] = useState(null);
   const [isLoaded, setIsLoaded] = useState(false);
   const [orgUnits, setOrgUnits] = useState([]);
-  const [orgUnitReassing, setOrgUnitReassign] = useState({});
+  const [orgUnitReassign, setOrgUnitReassign] = useState({});
   const [activeOrgUnit, setActiveOrgUnit] = useState({});
   const [activeDepartment, setActiveDepartment] = useState({});
   const [activeRepo, setActiveRepo] = useState([]);
@@ -52,11 +52,11 @@ function Repo() {
   const isEmployed = [
     {
       ID: "true",
-      Name: "true",
+      Name: true,
     },
     {
       ID: "false",
-      Name: "false",
+      Name: false,
     },
   ];
 
@@ -80,17 +80,22 @@ function Repo() {
     // Get user positions
     const userPositionsArr = [];
     if (
-      Object.keys(orgUnitReassing).length > 0 &&
-      orgUnitReassing.departments.length !== 0
+      Object.keys(orgUnitReassign).length > 0 &&
+      Object.keys(activeUser).length > 0
     ) {
-      orgUnitReassing.departments.forEach((element) => {
-        const userId = "ObjectId('" + activeUser._id + "')";
+      orgUnitReassign.departments.forEach((element) => {
+        const userId = activeUser._id;
+        // console.log("dept name", element.name);
+        // console.log("userId", userId);
+        // console.log("userId", userId);
+        // console.log("isEmployed", element.employees.includes(userId));
+        // const isEmployedx = findObjectIdInEmployees(userId, element.employees)
         const isEmployed = element.employees.includes(userId) ? true : false;
         const obj = {
-          ouId: orgUnitReassing.id,
+          ouId: orgUnitReassign.id,
           deptId: element.id,
           deptName: element.name,
-          userId: activeUser.id,
+          userId: userId,
           isEmployed: isEmployed,
         };
         userPositionsArr.push(obj);
@@ -98,7 +103,7 @@ function Repo() {
       // console.log("userPositionsArr", userPositionsArr);
       setUserPositions(userPositionsArr);
     }
-  }, [orgUnitReassing, activeUser]);
+  }, [orgUnitReassign, activeUser]);
 
   // const handleOrgUnitSelection = useCallback((e, orgUnit) => {
   //   setActiveOrgUnit(orgUnit);
@@ -114,55 +119,7 @@ function Repo() {
 
   function handleOrgUnitReassignSelection(orgUnit) {
     setOrgUnitReassign(orgUnit);
-    console.log(
-      " Object.keys(activeOrgUnit).length ORG",
-      Object.keys(activeOrgUnit).length
-    );
-    console.log(
-      "Object.keys(activeUser).length ORG",
-      Object.keys(activeUser).length
-    );
-
-    // if (
-    //   Object.keys(activeOrgUnit).length !== 0 &&
-    //   Object.keys(activeUser).length !== 0
-    // ) {
-    //   getuserPositions();
-    // }
-
-    // getuserPositions();
   }
-
-  // const  handleDepartmentSelection = useCallback((e, department) => {
-  //   setActiveDepartment(department);
-  //   //setActiveRepo(department[0].repo);
-  //   console.log("department", department);
-
-  //   fetch("/get-dept-repo-for-user", {
-  //     method: "POST",
-  //     headers: {
-  //       "Content-Type": "application/json",
-  //       Authorization: "Bearer " + userToken.current,
-  //     },
-  //     body: JSON.stringify({
-  //       ouId: activeOrgUnit.id,
-  //       deptId: department[0].id,
-  //     }),
-  //   })
-  //     //.then((res) => console.log('res', res))
-  //     .then((res) => res.json())
-  //     .then(
-  //       (res) => {
-  //         console.log("Resource res", res);
-  //         setIsLoaded(true);
-  //         setActiveRepo(res.repo);
-  //       },
-  //       (error) => {
-  //         setIsLoaded(true);
-  //         setError(error);
-  //       }
-  //     );
-  //   }, []);
 
   function handleDepartmentSelection(department) {
     setActiveDepartment(department);
@@ -196,22 +153,7 @@ function Repo() {
   }
 
   function handleUserSelection(user) {
-    console.log(
-      " Object.keys(activeOrgUnit).length USER",
-      Object.keys(activeOrgUnit).length
-    );
-    console.log(
-      "Object.keys(activeUser).length USER",
-      Object.keys(activeUser).length
-    );
     setActiveUser(user[0]);
-    // if (
-    //   Object.keys(activeOrgUnit).length !== 0 &&
-    //   Object.keys(activeUser).length !== 0
-    // ) {
-    //   getuserPositions();
-    // }
-    // getuserPositions();
   }
 
   const getAllUsers = useCallback((e) => {
@@ -266,68 +208,6 @@ function Repo() {
 
   // }, []);
 
-  function handleEditSaveRepo(e) {
-    console.log("handleEditSaveRepo", e);
-    const repos = e.changes;
-    if (repos.length !== 0) {
-      repos.forEach((element, index) => {
-        const repo = {
-          ouId: activeOrgUnit.id,
-          deptId: activeDepartment[0].id,
-          name: element.data.name,
-          url: element.data.url,
-          username: element.data.username,
-          password: element.data.password,
-        };
-
-        if (element.type === "update") {
-          // EDIT existing repo
-          repo.repoKey = element.key;
-          console.log("repo update", repo);
-
-          fetch("/edit-dept-repo-credentials", {
-            method: "PUT",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: "Bearer " + userToken.current,
-            },
-            body: JSON.stringify(repo),
-          })
-            .then((res) => res.json())
-            .then(
-              (result) => {
-                console.log(result.msg);
-              },
-              (error) => {
-                console.log(error.msg);
-              }
-            );
-        } else {
-          // ADD new repo
-          fetch("/add-new-credentials-to-dept-repo", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization: "Bearer " + userToken.current,
-            },
-            body: JSON.stringify(repo),
-          })
-            .then((res) => res.json())
-            .then(
-              (result) => {
-                console.log(result.msg);
-              },
-              (error) => {
-                console.log(error.msg);
-              }
-            );
-        }
-
-        // window.location.href = "/";
-      });
-    }
-  }
-
   const handleSavingUserRoles = useCallback((e) => {
     // console.log("handleSavingUserRoles:", e);
     const changes = e.changes;
@@ -352,29 +232,41 @@ function Repo() {
     // https://stackoverflow.com/questions/56395941/how-do-i-send-an-array-with-fetch-javascript
   }, []);
 
-  const handleSavingUserPositions = useCallback((e) => {
-    console.log("handleSavingUserRoles:", e);
-    const changes = e.changes;
-    // fetch("/edit-user-role", {
-    //   method: "PUT",
-    //   headers: {
-    //     "Content-Type": "application/json",
-    //     Authorization: "Bearer " + userToken.current,
-    //   },
-    //   body: JSON.stringify(changes),
-    // })
-    //   .then((res) => res.json())
-    //   .then(
-    //     (result) => {
-    //       console.log(result.msg);
-    //     },
-    //     (error) => {
-    //       console.log(error.msg);
-    //     }
-    //   );
+  const handleSavingUserPositions = useCallback(
+    (e) => {
+      console.log("handleSavingUserPositions:", e);
+      const changes = e.changes;
 
-    // https://stackoverflow.com/questions/56395941/how-do-i-send-an-array-with-fetch-javascript
-  }, []);
+      if (changes.length > 0) {
+        changes.forEach((element) => {
+          element.ouId = orgUnitReassign.id;
+          element.userId = activeUser._id;
+        });
+      }
+
+      // edit-dept-employees
+      fetch("/edit-dept-employees", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + userToken.current,
+        },
+        body: JSON.stringify(changes),
+      })
+        .then((res) => res.json())
+        .then(
+          (result) => {
+            console.log(result.msg);
+          },
+          (error) => {
+            console.log(error.msg);
+          }
+        );
+
+      // https://stackoverflow.com/questions/56395941/how-do-i-send-an-array-with-fetch-javascript
+    },
+    [activeUser._id, orgUnitReassign.id]
+  );
 
   return (
     <>

@@ -155,7 +155,7 @@ exports.editUserPositions = async (req, res) => {
       let result = null;
       if (changes.length !== 0) {
         changes.forEach(async (element, index) => {
-          if (element.isEmployed == true) {
+          if (element.isEmployed === 'true') {
             // Add element to array
             //  https://www.mongodb.com/docs/manual/reference/operator/update/push/
             result = await User.updateOne(

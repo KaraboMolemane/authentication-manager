@@ -1,5 +1,6 @@
 const OrganisationalUnit = require("../models/organisational_unit.model");
 const jwt = require("jsonwebtoken");
+const ObjectId = require("mongodb").ObjectId;
 
 // Add a new organisational_unit
 exports.addNewOrgUnit = async (req, res) => {
@@ -97,9 +98,6 @@ exports.getDeptRepoForUser = async (req, res) => {
       res.send({ repo: deptRepo });
       // res.send({ msg: "Success!" });
     } else {
-      // res.status(403).send({
-      //   msg: "Your JWT was verified, but you do not have access to this resource.",
-      // });
       res.status(403).send({
         repo: [
           {
@@ -146,7 +144,7 @@ exports.addNewCredentialsToDeptRepo = async (req, res) => {
         },
         { arrayFilters: [{ "department.id": { $eq: deptId } }] }
       );
-      if (result.modifiedCount !== 0) {
+      if (result.modifiedCount && result.modifiedCount !== 0) {
         res.send({ msg: "The new entry has been added to the repo" });
       } else {
         res.send({
@@ -223,12 +221,15 @@ exports.editDeptEmployees = async (req, res) => {
     if (decoded.role === "admin") {
       // Get an array of changes from the body
       const changes = req.body;
+      console.log("changes", changes);
       let result = null;
 
       if (changes.length !== 0) {
         changes.forEach(async (element, index) => {
-          const userObjId = "ObjectId('" + element.userId + "')";
-          if (element.isEmployed == true) {
+          const userId = element.userId;
+          const userObjId = new ObjectId(userId);
+          console.log("element.data.isEmployed", element.data.isEmployed);
+          if (element.data.isEmployed === "true") {
             // Add element to array
             //  https://www.mongodb.com/docs/manual/reference/operator/update/push/
             console.log("element", element);
@@ -241,7 +242,7 @@ exports.editDeptEmployees = async (req, res) => {
                   "departments.$[department].employees": userObjId,
                 },
               },
-              { arrayFilters: [{ "department.id": { $eq: element.deptId } }] }
+              { arrayFilters: [{ "department.id": { $eq: element.key } }] }
             );
             console.log("result", result);
           } else {
@@ -256,13 +257,13 @@ exports.editDeptEmployees = async (req, res) => {
                   "departments.$[department].employees": userObjId,
                 },
               },
-              { arrayFilters: [{ "department.id": { $eq: element.deptId } }] }
+              { arrayFilters: [{ "department.id": { $eq: element.key } }] }
             );
             console.log("result", result);
           }
         });
       }
-      res.send({ msg: "The user has been added to department employees." });
+      res.send({ msg: "The department employees have been modified" });
     } else {
       res.status(403).send({
         msg: "Your JWT was verified, but you do not have access to this resource. Please contact your admin to get access to this resource.",
