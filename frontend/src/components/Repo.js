@@ -263,6 +263,25 @@ function Repo() {
           }
         );
 
+      // edit-user-positions
+      fetch("/edit-user-positions", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + userToken.current,
+        },
+        body: JSON.stringify(changes),
+      })
+        .then((res) => res.json())
+        .then(
+          (result) => {
+            console.log(result.msg);
+          },
+          (error) => {
+            console.log(error.msg);
+          }
+        );
+
       // https://stackoverflow.com/questions/56395941/how-do-i-send-an-array-with-fetch-javascript
     },
     [activeUser._id, orgUnitReassign.id]

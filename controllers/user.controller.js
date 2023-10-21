@@ -155,33 +155,34 @@ exports.editUserPositions = async (req, res) => {
       let result = null;
       if (changes.length !== 0) {
         changes.forEach(async (element, index) => {
-          if (element.isEmployed === 'true') {
+          console.log('element', element)
+          if (element.data.isEmployed === "true") {
             // Add element to array
             //  https://www.mongodb.com/docs/manual/reference/operator/update/push/
-            result = await User.updateOne(
+                        result = await User.updateOne(
               {
                 _id: element.userId,
               },
               {
                 $push: {
-                  "positions.$[].departments_ids": element.deptId,
+                  "positions.$[].departments_ids": element.key,
                 },
               }
             );
-          } else {
+                      } else {
             // Remove element from array
             // https://www.mongodb.com/docs/manual/reference/operator/update/pull/#remove-items-from-an-array-of-documents
-            result = await User.updateOne(
+                        result = await User.updateOne(
               {
                 _id: element.userId,
               },
               {
                 $pull: {
-                  "positions.$[].departments_ids": element.deptId,
+                  "positions.$[].departments_ids": element.key,
                 },
               }
             );
-          }
+                      }
         });
       }
       res.send({ msg: "User positions has been updated" });
