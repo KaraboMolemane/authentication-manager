@@ -180,33 +180,53 @@ function Repo() {
 
   function handleSavingRepo(e) {
     const changes = e.changes;
+    console.log("changes", changes);
     changes.ouId = activeOrgUnit.id;
     changes.deptId = activeDepartment[0].id;
-    fetch("/edit-dept-repo-credentials", {
-      method: "PUT",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: "Bearer " + userToken.current,
-      },
-      body: JSON.stringify(changes),
-    })
-      .then((res) => res.json())
-      .then(
-        (result) => {
-          console.log(result.msg);
-        },
-        (error) => {
-          console.log(error.msg);
-        }
-      );
+
+    if (e.changes[0].type === "update") {
+      // // EDIT and existng repo
+      // fetch("/edit-dept-repo-credentials", {
+      //   method: "PUT",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //     Authorization: "Bearer " + userToken.current,
+      //   },
+      //   body: JSON.stringify(changes),
+      // })
+      //   .then((res) => res.json())
+      //   .then(
+      //     (result) => {
+      //       console.log(result.msg);
+      //     },
+      //     (error) => {
+      //       console.log(error.msg);
+      //     }
+      //   );
+    }
+    else{
+      // Add a new repo
+      // fetch("/add-new-credentials-to-dept-repo", {
+      //   method: "POST",
+      //   headers: {
+      //     "Content-Type": "application/json",
+      //     Authorization: "Bearer " + userToken.current,
+      //   },
+      //   body: JSON.stringify(changes),
+      // })
+      //   .then((res) => res.json())
+      //   .then(
+      //     (result) => {
+      //       console.log(result.msg);
+      //     },
+      //     (error) => {
+      //       console.log(error.msg);
+      //     }
+      //   );
+    }
 
     // https://stackoverflow.com/questions/56395941/how-do-i-send-an-array-with-fetch-javascript
   }
-
-  // const handleEditSaveRepo = useCallback((e) => {
-  //   console.log("handleEditSaveRepo", e);
-
-  // }, []);
 
   const handleSavingUserRoles = useCallback((e) => {
     // console.log("handleSavingUserRoles:", e);

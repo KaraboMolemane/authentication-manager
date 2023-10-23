@@ -170,6 +170,7 @@ exports.editDeptRepoCredentials = async (req, res) => {
   try {
     const token = req.headers["authorization"].split(" ")[1];
     const decoded = jwt.verify(token, "jwt-secret");
+    const result = null;
     if (decoded.role === "admin") {
       // Get an array of changes from the body
       const changes = req.body;
@@ -185,23 +186,32 @@ exports.editDeptRepoCredentials = async (req, res) => {
             password: element.data.password,
           };
           const repoKey = element.key;
-
-          const filter = { _id: element.key };
-          const update = { role: element.data.role };
-          const result = await OrganisationalUnit.findOneAndUpdate(
-            filter,
-            update,
+          return;
+          const result = await OrganisationalUnit.updateOne(
             {
-              new: true,
+              id: orgUnitId,
+            },
+            {
+              $set: {
+                "departments.$[dept].repo.$[r]": changes,
+              },
+            },
+            {
               arrayFilters: [
-                { "dept.id": { $eq: repo.deptId } },
+                { "dept.id": { $eq: deptId } },
                 { "r.name": { $eq: repoKey } },
               ],
             }
           );
         });
+        if (result.modifiedCount !== 0) {
+          res.send({ msg: "The repo has been edited" });
+        } else {
+          res.send({
+            msg: "Something went wrong while editing the entry to the repo",
+          });
+        }
       }
-      res.send({ msg: "The user role has been updated" });
     } else {
       res.status(403).send({
         msg: "Your JWT was verified, but you do not have access to this resource. Please contact your admin to get access to this resource.",
@@ -213,6 +223,19 @@ exports.editDeptRepoCredentials = async (req, res) => {
   }
   // https://mongoosejs.com/docs/tutorials/findoneandupdate.html
 };
+
+async function getRepoByName(orgId, deptId, repoName) {
+  try {
+    const repo = await OrganisationalUnit.findOne({
+      id: orgId,
+      "departments.id": deptId,
+      "departments.repo.name": repoName,
+    });
+    return repo;
+  } catch (error) {
+    throw error;
+  }
+}
 
 exports.editDeptEmployees = async (req, res) => {
   try {
