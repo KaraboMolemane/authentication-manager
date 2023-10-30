@@ -155,11 +155,11 @@ exports.editUserPositions = async (req, res) => {
       let result = null;
       if (changes.length !== 0) {
         changes.forEach(async (element, index) => {
-          console.log('element', element)
+          console.log("element", element);
           if (element.data.isEmployed === "true") {
             // Add element to array
             //  https://www.mongodb.com/docs/manual/reference/operator/update/push/
-                        result = await User.updateOne(
+            result = await User.updateOne(
               {
                 _id: element.userId,
               },
@@ -169,10 +169,10 @@ exports.editUserPositions = async (req, res) => {
                 },
               }
             );
-                      } else {
+          } else {
             // Remove element from array
             // https://www.mongodb.com/docs/manual/reference/operator/update/pull/#remove-items-from-an-array-of-documents
-                        result = await User.updateOne(
+            result = await User.updateOne(
               {
                 _id: element.userId,
               },
@@ -182,7 +182,7 @@ exports.editUserPositions = async (req, res) => {
                 },
               }
             );
-                      }
+          }
         });
       }
       res.send({ msg: "User positions has been updated" });

@@ -117,14 +117,15 @@ exports.getDeptRepoForUser = async (req, res) => {
 
 exports.addNewCredentialsToDeptRepo = async (req, res) => {
   try {
-    const orgUnitId = req.body.ouId;
-    const deptId = req.body.deptId;
-    const name = req.body.name;
-    const url = req.body.url;
-    const username = req.body.username;
-    const password = req.body.password;
+    console.log('ADD - changes', req.body);
+    const orgUnitId = req.body[0].ouId;
+    const deptId = req.body[0].deptId;
+    const name = req.body[0].data.name;
+    const url = req.body[0].data.url;
+    const username = req.body[0].data.username;
+    const password = req.body[0].data.password;
     const token = req.headers["authorization"].split(" ")[1];
-
+    
     // verify the JWT and user permissions
     const decoded = jwt.verify(token, "jwt-secret");
     if (decoded.role === "admin" || decoded.departments.includes(deptId)) {
@@ -144,6 +145,7 @@ exports.addNewCredentialsToDeptRepo = async (req, res) => {
         },
         { arrayFilters: [{ "department.id": { $eq: deptId } }] }
       );
+      console.log('result', result)
       if (result.modifiedCount && result.modifiedCount !== 0) {
         res.send({ msg: "The new entry has been added to the repo" });
       } else {
@@ -171,10 +173,11 @@ exports.editDeptRepoCredentials = async (req, res) => {
     const token = req.headers["authorization"].split(" ")[1];
     const decoded = jwt.verify(token, "jwt-secret");
     const result = null;
+    console.log("EDIT - changes", req.body);
     if (decoded.role === "admin") {
       // Get an array of changes from the body
       const changes = req.body;
-      console.log("changes", req.body);
+      
       if (changes.length !== 0) {
         changes.forEach(async (element, index) => {
           const repo = {

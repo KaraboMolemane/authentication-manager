@@ -85,11 +85,6 @@ function Repo() {
     ) {
       orgUnitReassign.departments.forEach((element) => {
         const userId = activeUser._id;
-        // console.log("dept name", element.name);
-        // console.log("userId", userId);
-        // console.log("userId", userId);
-        // console.log("isEmployed", element.employees.includes(userId));
-        // const isEmployedx = findObjectIdInEmployees(userId, element.employees)
         const isEmployed = element.employees.includes(userId) ? true : false;
         const obj = {
           ouId: orgUnitReassign.id,
@@ -180,49 +175,53 @@ function Repo() {
 
   function handleSavingRepo(e) {
     const changes = e.changes;
+    if (changes.length > 0) {
+      changes.forEach((element) => {
+        element.ouId = activeOrgUnit.id;
+        element.deptId = activeDepartment[0].id;
+      });
+    }
     console.log("changes", changes);
-    changes.ouId = activeOrgUnit.id;
-    changes.deptId = activeDepartment[0].id;
 
     if (e.changes[0].type === "update") {
-      // // EDIT and existng repo
-      // fetch("/edit-dept-repo-credentials", {
-      //   method: "PUT",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //     Authorization: "Bearer " + userToken.current,
-      //   },
-      //   body: JSON.stringify(changes),
-      // })
-      //   .then((res) => res.json())
-      //   .then(
-      //     (result) => {
-      //       console.log(result.msg);
-      //     },
-      //     (error) => {
-      //       console.log(error.msg);
-      //     }
-      //   );
+      // EDIT and existng repo
+      fetch("/edit-dept-repo-credentials", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + userToken.current,
+        },
+        body: JSON.stringify(changes),
+      })
+        .then((res) => res.json())
+        .then(
+          (result) => {
+            console.log(result.msg);
+          },
+          (error) => {
+            console.log(error.msg);
+          }
+        );
     }
     else{
-      // Add a new repo
-      // fetch("/add-new-credentials-to-dept-repo", {
-      //   method: "POST",
-      //   headers: {
-      //     "Content-Type": "application/json",
-      //     Authorization: "Bearer " + userToken.current,
-      //   },
-      //   body: JSON.stringify(changes),
-      // })
-      //   .then((res) => res.json())
-      //   .then(
-      //     (result) => {
-      //       console.log(result.msg);
-      //     },
-      //     (error) => {
-      //       console.log(error.msg);
-      //     }
-      //   );
+      // ADD a new repo
+      fetch("/add-new-credentials-to-dept-repo", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: "Bearer " + userToken.current,
+        },
+        body: JSON.stringify(changes),
+      })
+        .then((res) => res.json())
+        .then(
+          (result) => {
+            console.log(result.msg);
+          },
+          (error) => {
+            console.log(error.msg);
+          }
+        );
     }
 
     // https://stackoverflow.com/questions/56395941/how-do-i-send-an-array-with-fetch-javascript
