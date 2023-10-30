@@ -117,7 +117,7 @@ exports.getDeptRepoForUser = async (req, res) => {
 
 exports.addNewCredentialsToDeptRepo = async (req, res) => {
   try {
-    console.log('ADD - changes', req.body);
+    console.log("ADD - changes", req.body);
     const orgUnitId = req.body[0].ouId;
     const deptId = req.body[0].deptId;
     const name = req.body[0].data.name;
@@ -125,7 +125,7 @@ exports.addNewCredentialsToDeptRepo = async (req, res) => {
     const username = req.body[0].data.username;
     const password = req.body[0].data.password;
     const token = req.headers["authorization"].split(" ")[1];
-    
+
     // verify the JWT and user permissions
     const decoded = jwt.verify(token, "jwt-secret");
     if (decoded.role === "admin" || decoded.departments.includes(deptId)) {
@@ -145,7 +145,7 @@ exports.addNewCredentialsToDeptRepo = async (req, res) => {
         },
         { arrayFilters: [{ "department.id": { $eq: deptId } }] }
       );
-      console.log('result', result)
+      console.log("result", result);
       if (result.modifiedCount && result.modifiedCount !== 0) {
         res.send({ msg: "The new entry has been added to the repo" });
       } else {
@@ -172,42 +172,51 @@ exports.editDeptRepoCredentials = async (req, res) => {
   try {
     const token = req.headers["authorization"].split(" ")[1];
     const decoded = jwt.verify(token, "jwt-secret");
-    const result = null;
+
     console.log("EDIT - changes", req.body);
     if (decoded.role === "admin") {
       // Get an array of changes from the body
       const changes = req.body;
-      
+      let result = null;
       if (changes.length !== 0) {
         changes.forEach(async (element, index) => {
           const repo = {
-            ouId: element.id,
-            deptId: element.id,
             name: element.data.name,
             url: element.data.url,
             username: element.data.username,
             password: element.data.password,
           };
-          const repoKey = element.key;
-          return;
-          const result = await OrganisationalUnit.updateOne(
-            {
-              id: orgUnitId,
-            },
-            {
-              $set: {
-                "departments.$[dept].repo.$[r]": changes,
-              },
-            },
-            {
-              arrayFilters: [
-                { "dept.id": { $eq: deptId } },
-                { "r.name": { $eq: repoKey } },
-              ],
-            }
+          console.log("repo", repo);
+          console.log("ouId", element.ouId);
+          console.log("deptId", element.deptId);
+          console.log("repoKey", element.key);
+
+          const dbRepo = await getRepoByName(
+            element.ouId,
+            element.deptId,
+            element.key
           );
+
+          console.log("dbRepo", dbRepo);
+
+          // result = await OrganisationalUnit.updateOne(
+          //   {
+          //     id: element.ouId,
+          //   },
+          //   {
+          //     $set: {
+          //       "departments.$[dept].repo.$[r]": repo,
+          //     },
+          //   },
+          //   {
+          //     arrayFilters: [
+          //       { "dept.id": { $eq: element.deptId } },
+          //       { "r.name": { $eq: element.key } },
+          //     ],
+          //   }
+          // );
         });
-        if (result.modifiedCount !== 0) {
+        if (result.modifiedCount && result.modifiedCount !== 0) {
           res.send({ msg: "The repo has been edited" });
         } else {
           res.send({
@@ -225,15 +234,29 @@ exports.editDeptRepoCredentials = async (req, res) => {
     res.sendStatus(401);
   }
   // https://mongoosejs.com/docs/tutorials/findoneandupdate.html
+  // https://www.mongodb.com/community/forums/t/findoneandupdate-clearing-values-in-nested-array/248860
 };
 
 async function getRepoByName(orgId, deptId, repoName) {
   try {
-    const repo = await OrganisationalUnit.findOne({
+    let repo = null;
+    const orgUnit = await OrganisationalUnit.findOne({
       id: orgId,
-      "departments.id": deptId,
-      "departments.repo.name": repoName,
     });
+
+    for (let i = 0; i < orgUnit.departments.length; i++) {
+      const deptElement = orgUnit.departments[i];
+      if (deptElement.id === deptId) {
+        for (let j = 0; j < deptElement.repo.length; j++) {
+          const repoElement = deptElement.repo[j];
+          if(repoElement.name === repoName){
+            repo = repoElement
+            break;
+          }
+        }
+        break;
+      }
+    }
     return repo;
   } catch (error) {
     throw error;
