@@ -91,26 +91,19 @@ exports.getDeptRepoForUser = async (req, res) => {
     const decoded = jwt.verify(token, "jwt-secret");
 
     if (
-      decoded.role === "admin" ||
-      decoded.departments.includes(department[0].id)
+      decoded.role === "admin" || (decoded.departments && decoded.departments.includes(department[0].id)
+      )
     ) {
       deptRepo = department[0].repo;
       res.send({ repo: deptRepo });
       // res.send({ msg: "Success!" });
     } else {
       res.status(403).send({
-        repo: [
-          {
-            name: "Your JWT was verified ",
-            url: "But you do not have access to this resource.",
-            username: "Please contact your admin to get access to this repo.",
-            password: "",
-          },
-        ],
         msg: "Your JWT was verified, but you do not have access to this resource. Please contact your admin to get access to this repo.",
       });
     }
   } catch (error) {
+    console.log("error", error);
     res.sendStatus(401);
   }
 };
@@ -128,7 +121,7 @@ exports.addNewCredentialsToDeptRepo = async (req, res) => {
 
     // verify the JWT and user permissions
     const decoded = jwt.verify(token, "jwt-secret");
-    if (decoded.role === "admin" || decoded.departments.includes(deptId)) {
+    if (decoded.role === "admin" || (decoded.departments && decoded.departments.includes(deptId))) {
       const result = await OrganisationalUnit.updateOne(
         {
           id: orgUnitId,
@@ -160,7 +153,6 @@ exports.addNewCredentialsToDeptRepo = async (req, res) => {
     }
   } catch (error) {
     console.log("error", error);
-
     res.sendStatus(401);
   }
   // https://www.mongodb.com/docs/manual/reference/operator/update/push/
@@ -175,7 +167,7 @@ exports.editDeptRepoCredentials = async (req, res) => {
 
     if (
       decoded.role === "admin" ||
-      (decoded.role === "management" && decoded.departments.includes(deptId))
+      (decoded.role === "management" && decoded.departments && decoded.departments.includes(deptId))
     ) {
       // Get an array of changes from the body
       const changes = req.body;

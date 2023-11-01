@@ -1,5 +1,6 @@
 import { useEffect, useState, useRef, useCallback } from "react";
 import "../App.css";
+import { ToastContainer, toast } from "react-toastify";
 import DataGrid, {
   Column,
   Editing,
@@ -95,16 +96,9 @@ function Repo() {
         };
         userPositionsArr.push(obj);
       });
-      // console.log("userPositionsArr", userPositionsArr);
       setUserPositions(userPositionsArr);
     }
   }, [orgUnitReassign, activeUser]);
-
-  // const handleOrgUnitSelection = useCallback((e, orgUnit) => {
-  //   setActiveOrgUnit(orgUnit);
-  //   setActiveDepartment({});
-  //   setActiveRepo([]);
-  // }, []);
 
   function handleOrgUnitSelection(orgUnit) {
     setActiveOrgUnit(orgUnit);
@@ -137,8 +131,13 @@ function Repo() {
       .then(
         (res) => {
           console.log("Resource res", res);
-          setIsLoaded(true);
-          setActiveRepo(res.repo);
+          if(res.msg.includes("do not have access")){
+            toast(res.msg);
+          }
+          else{
+            setIsLoaded(true);
+            setActiveRepo(res.repo);
+          }
         },
         (error) => {
           setIsLoaded(true);
@@ -197,6 +196,7 @@ function Repo() {
         .then(
           (result) => {
             console.log(result.msg);
+            toast(result.msg);
           },
           (error) => {
             console.log(error.msg);
@@ -217,6 +217,7 @@ function Repo() {
         .then(
           (result) => {
             console.log(result.msg);
+            toast(result.msg);
           },
           (error) => {
             console.log(error.msg);
@@ -242,6 +243,7 @@ function Repo() {
       .then(
         (result) => {
           console.log(result.msg);
+          toast(result.msg);
         },
         (error) => {
           console.log(error.msg);
@@ -276,6 +278,7 @@ function Repo() {
         .then(
           (result) => {
             console.log(result.msg);
+            toast(result.msg);
           },
           (error) => {
             console.log(error.msg);
@@ -295,6 +298,7 @@ function Repo() {
         .then(
           (result) => {
             console.log(result.msg);
+            toast(result.msg);
           },
           (error) => {
             console.log(error.msg);
@@ -485,6 +489,10 @@ function Repo() {
             </div>
           </div>
         </div>
+      </div>
+      <div>
+        {/* toaster */}
+        <ToastContainer />
       </div>
     </>
   );
