@@ -86,7 +86,7 @@ function Landing() {
                     id="floatingUsername"
                     placeholder="name@example.com"
                   />
-                  <label for="floatingUsername">Username</label>
+                  <label htmlFor="floatingUsername">Username</label>
                 </div>
                 <div className="form-floating mb-3">
                   <input
@@ -95,7 +95,7 @@ function Landing() {
                     id="floatingPassword"
                     placeholder="Password"
                   />
-                  <label for="floatingPassword">Password</label>
+                  <label htmlFor="floatingPassword">Password</label>
                 </div>
                 <button
                   className="w-100 mb-2 btn btn-lg rounded-3 btn-primary"

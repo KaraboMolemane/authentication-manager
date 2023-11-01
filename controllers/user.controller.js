@@ -19,7 +19,7 @@ exports.addNewUser = async (req, res) => {
       .save()
       .then(function (doc) {
         console.log(doc._id.toString());
-        res.send({ message: "The user has been added" });
+        res.send({ message: "You have been to the credential repo. Please request admin to assign you to the relevant department(s)" });
       })
       .catch(function (error) {
         console.log(error);
@@ -63,7 +63,7 @@ exports.userLogin = async (req, res) => {
     let payload = {
       username: result.username,
       role: result.role,
-      departments: result.positions[0].departments_ids,
+      departments: (result.positions.length > 0)? result.positions[0].departments_ids : null,
     };
     const token = jwt.sign(JSON.stringify(payload), "jwt-secret", {
       algorithm: "HS256",
