@@ -173,14 +173,15 @@ exports.editDeptRepoCredentials = async (req, res) => {
     const token = req.headers["authorization"].split(" ")[1];
     const decoded = jwt.verify(token, "jwt-secret");
 
-    console.log("EDIT - changes", req.body);
-    if (decoded.role === "admin") {
+    if (
+      decoded.role === "admin" ||
+      (decoded.role === "management" && decoded.departments.includes(deptId))
+    ) {
       // Get an array of changes from the body
       const changes = req.body;
       let result = null;
       if (changes.length !== 0) {
         changes.forEach(async (element, index) => {
-
           const dbRepo = await getRepoByName(
             element.ouId,
             element.deptId,
