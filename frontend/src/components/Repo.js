@@ -131,8 +131,9 @@ function Repo() {
       .then(
         (res) => {
           console.log("Resource res", res);
-          if(res.msg.includes("do not have access")){
+          if(res.msg && res.msg.includes("do not have access")){
             toast(res.msg);
+            setActiveRepo({});
           }
           else{
             setIsLoaded(true);
@@ -226,6 +227,43 @@ function Repo() {
     }
 
     // https://stackoverflow.com/questions/56395941/how-do-i-send-an-array-with-fetch-javascript
+  }
+
+  function onRowAddCheck(e) {
+    fetch("/verify-token-for-adding-repo", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + userToken.current,
+      },
+      body: JSON.stringify({deptId: activeDepartment[0].id}),
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        // console.log("res", res);
+        if(res.msg && res.msg.includes("do not have access")){
+          toast(res.msg);
+        }
+      });
+  }
+
+  function onRowEditCheck(e) {
+    fetch("/verify-token-for-editing-repo", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: "Bearer " + userToken.current,
+      },
+      body: JSON.stringify({deptId: activeDepartment[0].id}),
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        // console.log("res", res);
+        if(res.msg && res.msg.includes("do not have access")){
+          toast(res.msg);
+        }
+      });
+
   }
 
   const handleSavingUserRoles = useCallback((e) => {
@@ -334,6 +372,8 @@ function Repo() {
         errorRowEnabled={false}
         showBorders={true}
         onSaving={handleSavingRepo}
+        onEditingStart={onRowEditCheck}
+        onInitNewRow={onRowAddCheck}
       >
         <Paging defaultPageSize={10} />
         <HeaderFilter visible={true}>
@@ -361,6 +401,10 @@ function Repo() {
         <Column dataField="username" />
         <Column dataField="password" />
       </DataGrid>
+      {/* 
+      Grid events
+      https://js.devexpress.com/React/Demos/WidgetsGallery/Demo/DataGrid/RowEditingAndEditingEvents
+      */}
       {/* Modal for editing user roles */}
       <div>
         <div

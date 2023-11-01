@@ -86,13 +86,16 @@ exports.getDeptRepoForUser = async (req, res) => {
     let department = departments.filter(
       (department) => department.id === deptId
     );
-
+      
     // check if user has access to the department repo
     const decoded = jwt.verify(token, "jwt-secret");
-
+    // console.log('token', token)
+    // console.log('decoded', decoded)
+    // console.log("1", decoded.departments)
+    // console.log("2", decoded.departments.includes(department[0].id))
     if (
-      decoded.role === "admin" || (decoded.departments && decoded.departments.includes(department[0].id)
-      )
+      decoded.role === "admin" ||
+      (decoded.departments && decoded.departments.includes(department[0].id))
     ) {
       deptRepo = department[0].repo;
       res.send({ repo: deptRepo });
@@ -121,7 +124,10 @@ exports.addNewCredentialsToDeptRepo = async (req, res) => {
 
     // verify the JWT and user permissions
     const decoded = jwt.verify(token, "jwt-secret");
-    if (decoded.role === "admin" || (decoded.departments && decoded.departments.includes(deptId))) {
+    if (
+      decoded.role === "admin" ||
+      (decoded.departments && decoded.departments.includes(deptId))
+    ) {
       const result = await OrganisationalUnit.updateOne(
         {
           id: orgUnitId,
@@ -160,6 +166,29 @@ exports.addNewCredentialsToDeptRepo = async (req, res) => {
   // https://www.mongodb.com/community/forums/t/updating-nested-array-of-objects-within-am-array-of-objects/246979
 };
 
+exports.verifyTokenForAddingRepo = async (req, res) => {
+  try {
+    const token = req.headers["authorization"].split(" ")[1];
+    const deptId = req.body.deptId;
+
+    // verify the JWT and user permissions
+    const decoded = jwt.verify(token, "jwt-secret");
+    if (
+      decoded.role === "admin" ||
+      (decoded.departments && decoded.departments.includes(deptId))
+    ) {
+      res.send({ msg: "You have access to this resource." });
+    } else {
+      res.status(403).send({
+        msg: "Your JWT was verified, but you do not have access to this resource. Any changes performed will not be saved.",
+      });
+    }
+  } catch (error) {
+    console.log("error", error);
+    res.sendStatus(401);
+  }
+};
+
 exports.editDeptRepoCredentials = async (req, res) => {
   try {
     const token = req.headers["authorization"].split(" ")[1];
@@ -167,7 +196,9 @@ exports.editDeptRepoCredentials = async (req, res) => {
 
     if (
       decoded.role === "admin" ||
-      (decoded.role === "management" && decoded.departments && decoded.departments.includes(deptId))
+      (decoded.role === "management" &&
+        decoded.departments &&
+        decoded.departments.includes(deptId))
     ) {
       // Get an array of changes from the body
       const changes = req.body;
@@ -253,6 +284,31 @@ async function getRepoByName(orgId, deptId, repoName) {
   }
 }
 
+exports.verifyTokenForEditingRepo = async (req, res) => {
+  try {
+    const token = req.headers["authorization"].split(" ")[1];
+    const deptId = req.body.deptId;
+
+    // verify the JWT and user permissions
+    const decoded = jwt.verify(token, "jwt-secret");
+    if (
+      decoded.role === "admin" ||
+      (decoded.role === "management" &&
+        decoded.departments &&
+        decoded.departments.includes(deptId))
+    ) {
+      res.send({ msg: "You have access to this resource." });
+    } else {
+      res.status(403).send({
+        msg: "Your JWT was verified, but you do not have access to this resource. Any changes performed will not be saved.",
+      });
+    }
+  } catch (error) {
+    console.log("error", error);
+    res.sendStatus(401);
+  }
+};
+
 exports.editDeptEmployees = async (req, res) => {
   try {
     const token = req.headers["authorization"].split(" ")[1];
@@ -260,7 +316,6 @@ exports.editDeptEmployees = async (req, res) => {
     if (decoded.role === "admin") {
       // Get an array of changes from the body
       const changes = req.body;
-      console.log("changes", changes);
       let result = null;
 
       if (changes.length !== 0) {

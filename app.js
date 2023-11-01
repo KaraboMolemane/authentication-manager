@@ -62,7 +62,9 @@ app.post("/get-depts-by-org-unit-id", orgUnitsController.getDepartmentsByOrgUnit
 app.post("/get-org-unit-repos-by-ids", orgUnitsController.getOUDeptReposByIds);
 app.post("/get-dept-repo-for-user", orgUnitsController.getDeptRepoForUser)
 app.post("/add-new-credentials-to-dept-repo", orgUnitsController.addNewCredentialsToDeptRepo);
+app.post("/verify-token-for-adding-repo", orgUnitsController.verifyTokenForAddingRepo);
 app.put("/edit-dept-repo-credentials", orgUnitsController.editDeptRepoCredentials);
+app.post("/verify-token-for-editing-repo", orgUnitsController.verifyTokenForEditingRepo);
 app.put("/edit-dept-employees", orgUnitsController.editDeptEmployees);
 
 

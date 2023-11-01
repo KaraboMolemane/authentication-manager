@@ -65,6 +65,7 @@ exports.userLogin = async (req, res) => {
       role: result.role,
       departments: (result.positions.length > 0)? result.positions[0].departments_ids : null,
     };
+    console.log('departments', result.positions)
     const token = jwt.sign(JSON.stringify(payload), "jwt-secret", {
       algorithm: "HS256",
     });
