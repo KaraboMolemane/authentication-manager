@@ -180,49 +180,46 @@ exports.editDeptRepoCredentials = async (req, res) => {
       let result = null;
       if (changes.length !== 0) {
         changes.forEach(async (element, index) => {
-          const repo = {
-            name: element.data.name,
-            url: element.data.url,
-            username: element.data.username,
-            password: element.data.password,
-          };
-          console.log("repo", repo);
-          console.log("ouId", element.ouId);
-          console.log("deptId", element.deptId);
-          console.log("repoKey", element.key);
 
           const dbRepo = await getRepoByName(
             element.ouId,
             element.deptId,
             element.key
           );
+          // console.log("dbRepo", dbRepo);
+          const repo = {
+            name:
+              element.data.name !== undefined ? element.data.name : dbRepo.name,
+            url: element.data.url !== undefined ? element.data.url : dbRepo.url,
+            username:
+              element.data.username !== undefined
+                ? element.data.username
+                : dbRepo.username,
+            password:
+              element.data.password !== undefined
+                ? element.data.password
+                : dbRepo.password,
+          };
+          // console.log("repo", repo);
 
-          console.log("dbRepo", dbRepo);
-
-          // result = await OrganisationalUnit.updateOne(
-          //   {
-          //     id: element.ouId,
-          //   },
-          //   {
-          //     $set: {
-          //       "departments.$[dept].repo.$[r]": repo,
-          //     },
-          //   },
-          //   {
-          //     arrayFilters: [
-          //       { "dept.id": { $eq: element.deptId } },
-          //       { "r.name": { $eq: element.key } },
-          //     ],
-          //   }
-          // );
+          const result = await OrganisationalUnit.updateOne(
+            {
+              id: element.ouId,
+            },
+            {
+              $set: {
+                "departments.$[dept].repo.$[r]": repo,
+              },
+            },
+            {
+              arrayFilters: [
+                { "dept.id": { $eq: element.deptId } },
+                { "r.name": { $eq: element.key } },
+              ],
+            }
+          );
         });
-        if (result.modifiedCount && result.modifiedCount !== 0) {
-          res.send({ msg: "The repo has been edited" });
-        } else {
-          res.send({
-            msg: "Something went wrong while editing the entry to the repo",
-          });
-        }
+        res.send({ msg: "The repo has been edited" });
       }
     } else {
       res.status(403).send({
@@ -249,8 +246,8 @@ async function getRepoByName(orgId, deptId, repoName) {
       if (deptElement.id === deptId) {
         for (let j = 0; j < deptElement.repo.length; j++) {
           const repoElement = deptElement.repo[j];
-          if(repoElement.name === repoName){
-            repo = repoElement
+          if (repoElement.name === repoName) {
+            repo = repoElement;
             break;
           }
         }
