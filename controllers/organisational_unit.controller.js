@@ -13,11 +13,9 @@ exports.addNewOrgUnit = async (req, res) => {
   orgUnitModel
     .save()
     .then(function (doc) {
-      console.log(doc._id.toString());
       res.send("The organisational_unit has been added");
     })
     .catch(function (error) {
-      console.log(error);
       res.status(500).send({
         message: "Some error occurred while creating the organisational_unit.",
       });
@@ -86,13 +84,9 @@ exports.getDeptRepoForUser = async (req, res) => {
     let department = departments.filter(
       (department) => department.id === deptId
     );
-      
+
     // check if user has access to the department repo
     const decoded = jwt.verify(token, "jwt-secret");
-    // console.log('token', token)
-    // console.log('decoded', decoded)
-    // console.log("1", decoded.departments)
-    // console.log("2", decoded.departments.includes(department[0].id))
     if (
       decoded.role === "admin" ||
       (decoded.departments && decoded.departments.includes(department[0].id))
@@ -113,7 +107,6 @@ exports.getDeptRepoForUser = async (req, res) => {
 
 exports.addNewCredentialsToDeptRepo = async (req, res) => {
   try {
-    console.log("ADD - changes", req.body);
     const orgUnitId = req.body[0].ouId;
     const deptId = req.body[0].deptId;
     const name = req.body[0].data.name;
@@ -144,7 +137,6 @@ exports.addNewCredentialsToDeptRepo = async (req, res) => {
         },
         { arrayFilters: [{ "department.id": { $eq: deptId } }] }
       );
-      console.log("result", result);
       if (result.modifiedCount && result.modifiedCount !== 0) {
         res.send({ msg: "The new entry has been added to the repo" });
       } else {
@@ -193,6 +185,7 @@ exports.editDeptRepoCredentials = async (req, res) => {
   try {
     const token = req.headers["authorization"].split(" ")[1];
     const decoded = jwt.verify(token, "jwt-secret");
+    const deptId = req.body[0].deptId;
 
     if (
       decoded.role === "admin" ||
@@ -202,7 +195,6 @@ exports.editDeptRepoCredentials = async (req, res) => {
     ) {
       // Get an array of changes from the body
       const changes = req.body;
-      let result = null;
       if (changes.length !== 0) {
         changes.forEach(async (element, index) => {
           const dbRepo = await getRepoByName(
@@ -210,7 +202,7 @@ exports.editDeptRepoCredentials = async (req, res) => {
             element.deptId,
             element.key
           );
-          // console.log("dbRepo", dbRepo);
+
           const repo = {
             name:
               element.data.name !== undefined ? element.data.name : dbRepo.name,
@@ -224,7 +216,6 @@ exports.editDeptRepoCredentials = async (req, res) => {
                 ? element.data.password
                 : dbRepo.password,
           };
-          // console.log("repo", repo);
 
           const result = await OrganisationalUnit.updateOne(
             {
@@ -322,11 +313,9 @@ exports.editDeptEmployees = async (req, res) => {
         changes.forEach(async (element, index) => {
           const userId = element.userId;
           const userObjId = new ObjectId(userId);
-          console.log("element.data.isEmployed", element.data.isEmployed);
           if (element.data.isEmployed === "true") {
             // Add element to array
             //  https://www.mongodb.com/docs/manual/reference/operator/update/push/
-            console.log("element", element);
             result = await OrganisationalUnit.updateOne(
               {
                 id: element.ouId,
@@ -338,7 +327,6 @@ exports.editDeptEmployees = async (req, res) => {
               },
               { arrayFilters: [{ "department.id": { $eq: element.key } }] }
             );
-            console.log("result", result);
           } else {
             // Remove element from array
             // https://www.mongodb.com/docs/manual/reference/operator/update/pull/#remove-items-from-an-array-of-documents
@@ -353,7 +341,6 @@ exports.editDeptEmployees = async (req, res) => {
               },
               { arrayFilters: [{ "department.id": { $eq: element.key } }] }
             );
-            console.log("result", result);
           }
         });
       }

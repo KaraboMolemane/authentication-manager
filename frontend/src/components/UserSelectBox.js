@@ -1,24 +1,20 @@
 import React from "react";
-import { useCallback, useEffect, useState } from "react";
+import { useCallback } from "react";
 
 import "devextreme/dist/css/dx.light.css";
 
 import { SelectBox } from "devextreme-react/select-box";
 
-function UserSelectBox({
-  allUsers,
-  handleUserSelection
-}) {
-
-  const onValueChanged = useCallback((e) => {
-
-    const user = allUsers.filter(
-      (user) => {
-        return user._id === e.value
-      }
-    );
-    handleUserSelection(user);
-  }, [allUsers, handleUserSelection ]);
+function UserSelectBox({ allUsers, handleUserSelection }) {
+  const onValueChanged = useCallback(
+    (e) => {
+      const user = allUsers.filter((user) => {
+        return user._id === e.value;
+      });
+      handleUserSelection(user);
+    },
+    [allUsers, handleUserSelection]
+  );
 
   return (
     <SelectBox

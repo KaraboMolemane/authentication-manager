@@ -18,7 +18,6 @@ function DepartmentSelectBox({
 
 
   const onValueChanged = useCallback((e) => {
-    // console.log("DepartmentSelectBox e", e);
     const department = departments.filter(
       (department) => department.id === e.value
     );
@@ -28,7 +27,6 @@ function DepartmentSelectBox({
   useEffect(() => {
 
     const orgID = {id: ouId}
-    // console.log('orgID', orgID);
     fetch("/get-depts-by-org-unit-id", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -36,7 +34,6 @@ function DepartmentSelectBox({
     })
       .then((res) => res.json())
       .then((res) => {
-        // console.log("res", res);
         setDepartments(res);
       });
 

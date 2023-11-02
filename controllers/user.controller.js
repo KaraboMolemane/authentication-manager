@@ -18,8 +18,10 @@ exports.addNewUser = async (req, res) => {
     userModel
       .save()
       .then(function (doc) {
-        console.log(doc._id.toString());
-        res.send({ message: "You have been to the credential repo. Please request admin to assign you to the relevant department(s)" });
+        res.send({
+          message:
+            "You have been to the credential repo. Please request admin to assign you to the relevant department(s)",
+        });
       })
       .catch(function (error) {
         console.log(error);
@@ -63,9 +65,12 @@ exports.userLogin = async (req, res) => {
     let payload = {
       username: result.username,
       role: result.role,
-      departments: (result.positions.length > 0)? result.positions[0].departments_ids : null,
+      departments:
+        result.positions.length > 0
+          ? result.positions[0].departments_ids
+          : null,
     };
-    console.log('departments', result.positions)
+    console.log("departments", result.positions);
     const token = jwt.sign(JSON.stringify(payload), "jwt-secret", {
       algorithm: "HS256",
     });
@@ -156,7 +161,6 @@ exports.editUserPositions = async (req, res) => {
       let result = null;
       if (changes.length !== 0) {
         changes.forEach(async (element, index) => {
-          console.log("element", element);
           if (element.data.isEmployed === "true") {
             // Add element to array
             //  https://www.mongodb.com/docs/manual/reference/operator/update/push/

@@ -34,7 +34,6 @@ function Repo() {
   const cookies = document.cookie;
   const indexToken = cookies.indexOf("token=") + 6;
   const userToken = useRef(cookies.substring(indexToken));
-  // console.log(userToken.current)
   const roles = [
     {
       ID: "normal",
@@ -113,8 +112,6 @@ function Repo() {
   function handleDepartmentSelection(department) {
     setActiveDepartment(department);
     //setActiveRepo(department[0].repo);
-    console.log("department", department);
-
     fetch("/get-dept-repo-for-user", {
       method: "POST",
       headers: {
@@ -126,16 +123,13 @@ function Repo() {
         deptId: department[0].id,
       }),
     })
-      //.then((res) => console.log('res', res))
       .then((res) => res.json())
       .then(
         (res) => {
-          console.log("Resource res", res);
-          if(res.msg && res.msg.includes("do not have access")){
+          if (res.msg && res.msg.includes("do not have access")) {
             toast(res.msg);
             setActiveRepo({});
-          }
-          else{
+          } else {
             setIsLoaded(true);
             setActiveRepo(res.repo);
           }
@@ -181,7 +175,6 @@ function Repo() {
         element.deptId = activeDepartment[0].id;
       });
     }
-    console.log("changes", changes);
 
     if (e.changes[0].type === "update") {
       // EDIT and existng repo
@@ -196,15 +189,13 @@ function Repo() {
         .then((res) => res.json())
         .then(
           (result) => {
-            console.log(result.msg);
             toast(result.msg);
           },
           (error) => {
             console.log(error.msg);
           }
         );
-    }
-    else{
+    } else {
       // ADD a new repo
       fetch("/add-new-credentials-to-dept-repo", {
         method: "POST",
@@ -236,12 +227,11 @@ function Repo() {
         "Content-Type": "application/json",
         Authorization: "Bearer " + userToken.current,
       },
-      body: JSON.stringify({deptId: activeDepartment[0].id}),
+      body: JSON.stringify({ deptId: activeDepartment[0].id }),
     })
       .then((res) => res.json())
       .then((res) => {
-        // console.log("res", res);
-        if(res.msg && res.msg.includes("do not have access")){
+        if (res.msg && res.msg.includes("do not have access")) {
           toast(res.msg);
         }
       });
@@ -254,20 +244,17 @@ function Repo() {
         "Content-Type": "application/json",
         Authorization: "Bearer " + userToken.current,
       },
-      body: JSON.stringify({deptId: activeDepartment[0].id}),
+      body: JSON.stringify({ deptId: activeDepartment[0].id }),
     })
       .then((res) => res.json())
       .then((res) => {
-        // console.log("res", res);
-        if(res.msg && res.msg.includes("do not have access")){
+        if (res.msg && res.msg.includes("do not have access")) {
           toast(res.msg);
         }
       });
-
   }
 
   const handleSavingUserRoles = useCallback((e) => {
-    // console.log("handleSavingUserRoles:", e);
     const changes = e.changes;
     fetch("/edit-user-role", {
       method: "PUT",
@@ -293,7 +280,6 @@ function Repo() {
 
   const handleSavingUserPositions = useCallback(
     (e) => {
-      console.log("handleSavingUserPositions:", e);
       const changes = e.changes;
 
       if (changes.length > 0) {
@@ -315,7 +301,6 @@ function Repo() {
         .then((res) => res.json())
         .then(
           (result) => {
-            console.log(result.msg);
             toast(result.msg);
           },
           (error) => {
@@ -335,7 +320,6 @@ function Repo() {
         .then((res) => res.json())
         .then(
           (result) => {
-            console.log(result.msg);
             toast(result.msg);
           },
           (error) => {
