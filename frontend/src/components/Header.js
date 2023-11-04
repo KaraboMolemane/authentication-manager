@@ -1,8 +1,9 @@
-import { useState } from "react";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
-function Header() {
+function Header({
+  getAllUsers
+}) {
   const queryString = window.location.search;
   const searchParams = new URLSearchParams(queryString);
   const username = searchParams.get("username");
@@ -79,6 +80,35 @@ function Header() {
 
               <li>
                 <a
+                  className={(role === "admin")? "dropdown-item d-flex align-items-center" : "dropdown-item d-flex align-items-center disabled"}
+                  href="pages-faq.html"
+                  data-bs-toggle="modal"
+                  data-bs-target="#staticBackdropLive"
+                  onClick={getAllUsers}
+                >
+                  <span>Edit user roles</span>
+                </a>
+              </li>
+              <li>
+                <hr className="dropdown-divider" />
+              </li>
+
+              <li>
+                <a
+                  className={(role === "admin")? "dropdown-item d-flex align-items-center" : "dropdown-item d-flex align-items-center disabled"}
+                  href="pages-faq.html"
+                  data-bs-toggle="modal"
+                  data-bs-target="#staticBackdropLive2"
+                  onClick={getAllUsers}
+                >
+                  <span>Reassign users</span>
+                </a>
+              </li>
+              <li>
+                <hr className="dropdown-divider" />
+              </li>
+              <li>
+                <a
                   className="dropdown-item d-flex align-items-center disabled"
                   href="pages-faq.html"
                 >
@@ -89,7 +119,6 @@ function Header() {
               <li>
                 <hr className="dropdown-divider" />
               </li>
-
               <li>
                 <a
                   className="dropdown-item d-flex align-items-center"

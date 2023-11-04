@@ -22,6 +22,7 @@ const OrgUnitsShema = mongoose.Schema({
         username: {type: String, required: false},
         password: {type: String, required: false},
       }],
+      employees: {type: Array, required: false}
     }],
 });
 

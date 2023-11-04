@@ -18,8 +18,10 @@ exports.addNewUser = async (req, res) => {
     userModel
       .save()
       .then(function (doc) {
-        console.log(doc._id.toString());
-        res.send({ message: "The user has been added" });
+        res.send({
+          message:
+            "You have been to the credential repo. Please request admin to assign you to the relevant department(s)",
+        });
       })
       .catch(function (error) {
         console.log(error);
@@ -45,6 +47,17 @@ const findUserByUsername = async (req) => {
   }
 };
 
+// Get all users
+exports.getAllUsers = async (req, res) => {
+  try {
+    result = await User.find({});
+    res.send(result);
+  } catch (error) {
+    res.sendStatus(401);
+  }
+  // https://mongoosejs.com/docs/api/model.html#Model.find()
+};
+
 // Login
 exports.userLogin = async (req, res) => {
   let result = await findOneUser(req);
@@ -52,20 +65,22 @@ exports.userLogin = async (req, res) => {
     let payload = {
       username: result.username,
       role: result.role,
-      departments: result.positions[0].departments_ids,
+      departments:
+        result.positions.length > 0
+          ? result.positions[0].departments_ids
+          : null,
     };
+    console.log("departments", result.positions);
     const token = jwt.sign(JSON.stringify(payload), "jwt-secret", {
       algorithm: "HS256",
     });
-    res
-      .cookie("token", token)
-      .send({
-        message: "Login successful!",
-        username: result.username,
-        firstname: result.firstname,
-        lastname: result.lastname,
-        role: result.role,
-      });
+    res.cookie("token", token).send({
+      message: "Login successful!",
+      username: result.username,
+      firstname: result.firstname,
+      lastname: result.lastname,
+      role: result.role,
+    });
     // res.send({ token: token, message: "Login successful!" });
   } else {
     res.status(403).send({ message: "Incorrect login!" });
@@ -105,4 +120,85 @@ exports.userLogOut = async (req, res) => {
       msg: "Operation failed. Please try again or contact your admin.",
     });
   }
+};
+
+exports.editUserRole = async (req, res) => {
+  try {
+    const token = req.headers["authorization"].split(" ")[1];
+    const decoded = jwt.verify(token, "jwt-secret");
+    if (decoded.role === "admin") {
+      // Get an array of changes from the body
+      const changes = req.body;
+      if (changes.length !== 0) {
+        changes.forEach(async (element) => {
+          const filter = { _id: element.key };
+          const update = { role: element.data.role };
+          const result = await User.findOneAndUpdate(filter, update, {
+            new: true,
+          });
+        });
+      }
+      res.send({ msg: "The user role has been updated" });
+    } else {
+      res.status(403).send({
+        msg: "Your JWT was verified, but you do not have access to this resource. Please contact your admin to get access to this resource.",
+      });
+    }
+  } catch (error) {
+    console.log("error", error);
+    res.sendStatus(401);
+  }
+  // https://mongoosejs.com/docs/tutorials/findoneandupdate.html
+};
+
+exports.editUserPositions = async (req, res) => {
+  try {
+    const token = req.headers["authorization"].split(" ")[1];
+    const decoded = jwt.verify(token, "jwt-secret");
+    if (decoded.role === "admin") {
+      // Get an array of changes from the body
+      const changes = req.body;
+      let result = null;
+      if (changes.length !== 0) {
+        changes.forEach(async (element, index) => {
+          if (element.data.isEmployed === "true") {
+            // Add element to array
+            //  https://www.mongodb.com/docs/manual/reference/operator/update/push/
+            result = await User.updateOne(
+              {
+                _id: element.userId,
+              },
+              {
+                $push: {
+                  "positions.$[].departments_ids": element.key,
+                },
+              }
+            );
+          } else {
+            // Remove element from array
+            // https://www.mongodb.com/docs/manual/reference/operator/update/pull/#remove-items-from-an-array-of-documents
+            result = await User.updateOne(
+              {
+                _id: element.userId,
+              },
+              {
+                $pull: {
+                  "positions.$[].departments_ids": element.key,
+                },
+              }
+            );
+          }
+        });
+      }
+      res.send({ msg: "User positions has been updated" });
+    } else {
+      res.status(403).send({
+        msg: "Your JWT was verified, but you do not have access to this resource. Please contact your admin to get access to this resource.",
+      });
+    }
+  } catch (error) {
+    console.log("error", error);
+    res.sendStatus(401);
+  }
+  // https://mongoosejs.com/docs/tutorials/findoneandupdate.html
 };

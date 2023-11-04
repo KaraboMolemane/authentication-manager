@@ -15,6 +15,7 @@ const UserSchema = mongoose.Schema({
   username: {
     type: String,
     required: true,
+    unique: true,
     default: "username",
   },
   password: {
@@ -30,15 +31,14 @@ const UserSchema = mongoose.Schema({
   positions: {
     type: Array,
     required: false,
-    default:[
-        {
-            OU_ids: [], 
-            departments_ids: []
-        }
-    ]
-  },
+    default: [
+      {
+        OU_ids: [],
+        departments_ids: [],
+      },
+    ],
+  }
 });
-
 
 // Create Model
 const UserModel = mongoose.model("users", UserSchema);
