@@ -21,7 +21,7 @@
 
 <h3 align="center">Authentication manager</h3>
   <p align="center">
-    This is a React app (frontend) that uses Express and Mongoose (backend) to manage user registration and login using JSON Web Tokens (JWT). Users have different roles (rights) within the application such as reassigning other users to different organizational units and departments. Additionaly, JWT tokens are are checked in the backend to ensure the user has the access/rights to perform specific operations.
+    This is a React app (frontend) that uses Express and Mongoose (backend) to manage user registration and login using JSON Web Tokens (JWT). Users have different roles (rights) within the application such as reassigning other users to different organizational units and departments. Additionaly, JWT tokens are are checked in the backend to ensure the user has the access/rights to perform specific operations. This project is a school project. 
     <br />
     <a href="https://github.com/KaraboMolemane/authentication-manager"><strong>Explore the docs »</strong></a>
     <br />
